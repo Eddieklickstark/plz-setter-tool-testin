@@ -1,94 +1,34 @@
-// PLZ Setter Tool für GIGA.GREEN
 (function() {
     var SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR8BRATZeyiaD0NMh00CWU1bJYZA2XRYA3jrd_XRLg-wWV9UEh9hD___JLuiFZT8nalLamjKMJyc3MJ/pub?gid=0&single=true&output=csv';
     var aeMapping = {};
+    var bundeslaender = [];
 
-    // Styles einfügen
     function addStyles() {
         var css = document.createElement('style');
         css.type = 'text/css';
         css.innerHTML = [
-            '.setter-tool-container {',
-            '    max-width: 800px;',
-            '    margin: 0 auto;',
-            '    padding: 20px;',
-            '}',
-            
-            '#plz-input {',
-            '    width: 100%;',
-            '    padding: 16px;',
-            '    font-size: 16px;',
-            '    border: 1px solid #E5E7EB;',
-            '    border-radius: 8px;',
-            '    margin-bottom: 20px;',
-            '    background: #FFFFFF;',
-            '    transition: all 0.3s ease;',
-            '}',
-            
-            '#plz-input:focus {',
-            '    outline: none;',
-            '    border-color: #046C4E;',
-            '    box-shadow: 0 0 0 3px rgba(4, 108, 78, 0.1);',
-            '}',
-            
-            '.ae-info {',
-            '    background: #FFFFFF;',
-            '    border: 1px solid #E5E7EB;',
-            '    border-radius: 8px;',
-            '    padding: 24px;',
-            '    margin-bottom: 24px;',
-            '    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);',
-            '}',
-            
-            '.ae-title {',
-            '    color: #111827;',
-            '    font-size: 1.25rem;',
-            '    font-weight: 600;',
-            '    margin-bottom: 16px;',
-            '}',
-            
-            '.ae-details p {',
-            '    margin: 12px 0;',
-            '    color: #374151;',
-            '    font-size: 1rem;',
-            '    line-height: 1.5;',
-            '}',
-            
-            '.ae-details strong {',
-            '    color: #111827;',
-            '    font-weight: 600;',
-            '}',
-            
-            '.no-ae-found {',
-            '    background: #FEF2F2;',
-            '    border: 1px solid #FCA5A5;',
-            '    color: #991B1B;',
-            '    padding: 16px;',
-            '    border-radius: 8px;',
-            '    font-size: 0.95rem;',
-            '}',
-            
-            '.calendly-inline-widget {',
-            '    border-radius: 8px;',
-            '    overflow: hidden;',
-            '    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);',
-            '    background: #FFFFFF;',
-            '    margin-top: 20px;',
-            '}',
-            
-            '#plz-input::placeholder {',
-            '    color: #9CA3AF;',
-            '}'
+            '.setter-tool-container { max-width: 800px; margin: 0 auto; padding: 20px; }',
+            '.bundesland-input-container { position: relative; }',
+            '#bundesland-input { width: 100%; padding: 16px; font-size: 16px; border: 1px solid #E5E7EB; border-radius: 8px; margin-bottom: 4px; }',
+            '#bundesland-input:focus { outline: none; border-color: #046C4E; box-shadow: 0 0 0 3px rgba(4, 108, 78, 0.1); }',
+            '.bundesland-dropdown { position: absolute; width: 100%; max-height: 300px; overflow-y: auto; background: white; border: 1px solid #E5E7EB; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); display: none; z-index: 1000; }',
+            '.bundesland-option { padding: 12px 16px; cursor: pointer; }',
+            '.bundesland-option:hover { background: #F3F4F6; }',
+            '.ae-info { background: white; border: 1px solid #E5E7EB; border-radius: 8px; padding: 24px; margin: 20px 0; }',
+            '.ae-title { color: #111827; font-size: 1.25rem; font-weight: 600; margin-bottom: 16px; }',
+            '.calendly-inline-widget { border-radius: 8px; overflow: hidden; margin-top: 20px; }'
         ].join('\n');
         document.head.appendChild(css);
     }
 
-    // HTML Struktur erstellen
     function createStructure() {
         var container = document.createElement('div');
         container.className = 'setter-tool-container';
         container.innerHTML = [
-            '<input type="text" id="plz-input" placeholder="PLZ des Interessenten eingeben..." maxlength="5">',
+            '<div class="bundesland-input-container">',
+            '   <input type="text" id="bundesland-input" placeholder="Bundesland eingeben..." autocomplete="off">',
+            '   <div class="bundesland-dropdown"></div>',
+            '</div>',
             '<div id="ae-result"></div>',
             '<div id="calendly-container"></div>'
         ].join('');
@@ -99,7 +39,6 @@
         }
     }
 
-    // Daten aus Google Sheets laden
     function loadAEData() {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', SHEET_URL, true);
@@ -110,16 +49,17 @@
                     skipEmptyLines: true,
                     complete: function(results) {
                         aeMapping = {};
+                        bundeslaender = [];
                         results.data.forEach(function(row) {
-                            if (row.plz_range && row.name) {
-                                aeMapping[row.plz_range.trim()] = {
+                            if (row.Bundesland && row.name) {
+                                aeMapping[row.Bundesland.trim()] = {
                                     name: row.name.trim(),
-                                    region: row.region ? row.region.trim() : '',
                                     calendlyLink: row.calendly_link ? row.calendly_link.trim() : ''
                                 };
+                                bundeslaender.push(row.Bundesland.trim());
                             }
                         });
-                        console.log('AE Mapping geladen:', aeMapping);
+                        console.log('Daten geladen:', aeMapping);
                     }
                 });
             }
@@ -127,47 +67,23 @@
         xhr.send();
     }
 
-    // PLZ-Range Check verbessert
-    function isInRange(plz, range) {
-        var bounds = range.split('-');
-        var start = bounds[0];
-        var end = bounds[1];
-        
-        // Extrahiere die relevanten Stellen für den Vergleich
-        var plzPrefix = plz.substring(0, 3);
-        var startPrefix = start.substring(0, 3);
-        var endPrefix = end.substring(0, 3);
-        
-        // Vergleiche als Zahlen
-        var plzNum = parseInt(plzPrefix, 10);
-        var startNum = parseInt(startPrefix, 10);
-        var endNum = parseInt(endPrefix, 10);
-        
-        return plzNum >= startNum && plzNum <= endNum;
-    }
+    function updateDropdown(searchTerm) {
+        var dropdown = document.querySelector('.bundesland-dropdown');
+        var filteredBundeslaender = bundeslaender.filter(function(bundesland) {
+            return bundesland.toLowerCase().includes(searchTerm.toLowerCase());
+        });
 
-    // PLZ-Input Handler
-    function handlePLZInput(event) {
-        var plz = event.target.value.replace(/[^0-9]/g, '').slice(0, 5);
-        event.target.value = plz;
-        
-        if (plz.length >= 3) {
-            var foundAE = null;
-            
-            Object.keys(aeMapping).forEach(function(range) {
-                if (isInRange(plz, range)) {
-                    foundAE = aeMapping[range];
-                }
-            });
-            
-            updateUI(foundAE, plz);
+        if (filteredBundeslaender.length > 0 && searchTerm) {
+            dropdown.style.display = 'block';
+            dropdown.innerHTML = filteredBundeslaender.map(function(bundesland) {
+                return '<div class="bundesland-option">' + bundesland + '</div>';
+            }).join('');
         } else {
-            clearUI();
+            dropdown.style.display = 'none';
         }
     }
 
-    // UI Update
-    function updateUI(ae, plz) {
+    function updateUI(ae, bundesland) {
         var resultDiv = document.getElementById('ae-result');
         var calendlyDiv = document.getElementById('calendly-container');
         
@@ -176,10 +92,9 @@
         if (ae) {
             resultDiv.innerHTML = [
                 '<div class="ae-info">',
-                '    <h3 class="ae-title">Zuständiger Closer für PLZ ' + plz + ':</h3>',
+                '    <h3 class="ae-title">Zuständiger Closer für ' + bundesland + ':</h3>',
                 '    <div class="ae-details">',
                 '        <p><strong>Name:</strong> ' + ae.name + '</p>',
-                '        <p><strong>Region:</strong> ' + ae.region + '</p>',
                 '    </div>',
                 '</div>'
             ].join('');
@@ -200,34 +115,43 @@
                 }
             }
         } else {
-            resultDiv.innerHTML = '<div class="no-ae-found"><p>Kein zuständiger Closer für PLZ ' + plz + ' gefunden.</p></div>';
+            resultDiv.innerHTML = '';
             calendlyDiv.innerHTML = '';
         }
     }
 
-    // UI leeren
-    function clearUI() {
-        var resultDiv = document.getElementById('ae-result');
-        var calendlyDiv = document.getElementById('calendly-container');
-        if (resultDiv) resultDiv.innerHTML = '';
-        if (calendlyDiv) calendlyDiv.innerHTML = '';
-    }
-
-    // Alles initialisieren
     function init() {
         addStyles();
         createStructure();
         loadAEData();
         
-        var plzInput = document.getElementById('plz-input');
-        if (plzInput) {
-            plzInput.addEventListener('input', handlePLZInput);
-        }
+        var input = document.getElementById('bundesland-input');
+        var dropdown = document.querySelector('.bundesland-dropdown');
+        
+        input.addEventListener('input', function() {
+            updateDropdown(this.value);
+        });
+        
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('bundesland-option')) {
+                var selectedBundesland = e.target.textContent;
+                input.value = selectedBundesland;
+                dropdown.style.display = 'none';
+                updateUI(aeMapping[selectedBundesland], selectedBundesland);
+            } else if (!e.target.classList.contains('bundesland-input')) {
+                dropdown.style.display = 'none';
+            }
+        });
+        
+        input.addEventListener('focus', function() {
+            if (this.value) {
+                updateDropdown(this.value);
+            }
+        });
         
         setInterval(loadAEData, 5 * 60 * 1000);
     }
 
-    // Dependencies laden
     function loadDependencies() {
         var papaScript = document.createElement('script');
         papaScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js';
@@ -241,7 +165,6 @@
         document.head.appendChild(papaScript);
     }
 
-    // Starten
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', loadDependencies);
     } else {
