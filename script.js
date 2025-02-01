@@ -102,7 +102,7 @@
             if (ae.calendlyLink) {
                 calendlyDiv.innerHTML = [
                     '<div class="calendly-inline-widget" ',
-                    'data-url="' + ae.calendlyLink + '?hide_gdpr_banner=1&hide_event_type_details=1" ',
+                    'data-url="' + ae.calendlyLink + '?hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1" ',
                     'style="min-width:320px;height:700px;">',
                     '</div>'
                 ].join('');
