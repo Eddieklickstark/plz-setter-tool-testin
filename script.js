@@ -4,24 +4,20 @@
     var aeMapping = {};
     var bundeslaender = [];
 
-    // Fügt Styles hinzu
+    // Fügt CSS-Styles hinzu
     function addStyles() {
         var css = document.createElement('style');
         css.type = 'text/css';
         css.innerHTML = [
-            // Allgemeine Container- und Textstile
             '.setter-tool { max-width: 800px; margin: 0 auto; padding: 20px; font-family: figtree, sans-serif; }',
             '.section-header { font-size: 24px; color: #111827; margin-bottom: 16px; font-weight: 600; padding-bottom: 8px; border-bottom: 1px solid #E5E7EB; }',
             '.subsection-header { font-size: 18px; color: #374151; margin: 16px 0; font-weight: 500; }',
-            // Styles für den Bundesland-Bereich
             '.bundesland-section { margin-bottom: 40px; }',
             '.bundesland-input-container { position: relative; margin-bottom: 20px; }',
             '.ios-input { width: 100%; padding: 12px; border: 1px solid #E5E7EB; border-radius: 10px; font-size: 16px; background: #FAFAFA; }',
             '.ios-input:focus { outline: none; border-color: #046C4E; background: #FFFFFF; box-shadow: 0 0 0 3px rgba(4, 108, 78, 0.1); }',
-            // Calendly Container
             '.calendly-placeholder { background: #F9FAFB; border: 2px dashed #E5E7EB; border-radius: 12px; padding: 40px; text-align: center; color: #6B7280; min-height: 400px; display: flex; align-items: center; justify-content: center; margin: 20px 0; }',
             '#calendly-container { margin: 20px 0; border-radius: 12px; overflow: hidden; background: white; min-height: 400px; }',
-            // Formular-Styles
             '.form-section { margin-top: 40px; }',
             '.form-group { margin-bottom: 32px; }',
             '.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }',
@@ -29,20 +25,18 @@
             '.ios-textarea { min-height: 120px; resize: vertical; width: 100%; }',
             '.ios-submit { background: #046C4E; color: white; padding: 16px 32px; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; width: 100%; margin-top: 24px; transition: all 0.3s ease; }',
             '.ios-submit:hover { background: #065F46; }',
-            // Info-Box
             '.ae-info { background: #f7fafc; border: 1px solid #E5E7EB; border-radius: 8px; padding: 20px; margin-bottom: 20px; }'
         ].join('\n');
         document.head.appendChild(css);
     }
 
-    // Baut die grundlegende HTML-Struktur auf:
-    // 1. Ein oberer Bereich mit dem Bundesland-Dropdown
-    // 2. Der Calendly-Bereich, der den Kalender lädt
-    // 3. Das Formular mit den weiteren Feldern, in das später die Daten eingetragen werden
+    // Baut die HTML-Struktur auf:
+    // 1. Oben: Bundesland-Dropdown und AE-Info
+    // 2. Calendly-Bereich
+    // 3. Das Kontaktformular mit den statischen Optionen
     function createStructure() {
         var container = document.querySelector('.setter-tool');
         if (!container) return;
-
         var html = `
             <div class="bundesland-section">
                 <h2 class="section-header">Bundesland Auswahl</h2>
@@ -51,35 +45,45 @@
                         <option value="">Bundesland wählen...</option>
                     </select>
                 </div>
+                <div id="ae-result"></div>
             </div>
             <div id="calendly-container">
                 <div class="calendly-placeholder">Bitte wählen Sie zuerst ein Bundesland aus, um den Kalender zu laden.</div>
             </div>
             <form id="contact-form" class="form-section">
                 <h2 class="section-header">Kontaktinformationen</h2>
-                
                 <div class="form-group">
                     <h3 class="subsection-header">Flächeninformationen</h3>
                     <div class="form-grid">
                         <select class="ios-input required" name="flaechenart" required>
                             <option value="">Flächenart wählen*</option>
+                            <option value="Freifläche">Freifläche</option>
+                            <option value="Dachfläche">Dachfläche</option>
                             <option value="option1">Option 1</option>
                             <option value="option2">Option 2</option>
                         </select>
+                        
                         <select class="ios-input required" name="flaechengroesse" required>
                             <option value="">Flächengröße wählen*</option>
+                            <option value="Weniger als 2.000 Quadratmeter">Weniger als 2.000 Quadratmeter</option>
+                            <option value="2.000 bis 4.000 Quadratmeter">2.000 bis 4.000 Quadratmeter</option>
+                            <option value="Mehr als 4.000 Quadratmeter">Mehr als 4.000 Quadratmeter</option>
                             <option value="size1">Size 1</option>
                             <option value="size2">Size 2</option>
                         </select>
+                        
                         <select class="ios-input required" name="stromverbrauch" required>
                             <option value="">Stromverbrauch wählen*</option>
+                            <option value="Unter 100.000 kWh">Unter 100.000 kWh</option>
+                            <option value="100.000 bis 500.000 kWh">100.000 bis 500.000 kWh</option>
+                            <option value="500.000 bis 1.000.000 kWh">500.000 bis 1.000.000 kWh</option>
+                            <option value="Über 1.000.000 kWh">Über 1.000.000 kWh</option>
                             <option value="usage1">Usage 1</option>
                             <option value="usage2">Usage 2</option>
                         </select>
                         <input type="number" class="ios-input required" name="standorte" placeholder="Anzahl der Standorte*" required>
                     </div>
                 </div>
-                
                 <div class="form-group">
                     <h3 class="subsection-header">Standortinformationen</h3>
                     <div class="form-grid">
@@ -89,19 +93,71 @@
                         <input type="text" class="ios-input required" name="stadt" placeholder="Standort Stadt*" required>
                     </div>
                 </div>
-                
                 <div class="form-group">
                     <h3 class="subsection-header">Unternehmensinformationen</h3>
                     <div class="form-grid">
                         <input type="text" class="ios-input required" name="firma" placeholder="Firma*" required>
                         <select class="ios-input required" name="branche" required>
                             <option value="">Branche wählen*</option>
+                            <option value="MSP">MSP (Management-Dienstleistungsanbieter)</option>
+                            <option value="another">Another option</option>
+                            <option value="URP">URP (Unternehmensressourcenplanung)</option>
+                            <option value="Regierung">Regierung/Militär</option>
+                            <option value="Speicherungs-Dienstleistungsanbieter">Speicherungs-Dienstleistungsanbieter</option>
+                            <option value="Dienstleistungsanbieter">Dienstleistungsanbieter</option>
+                            <option value="Netzwerkausrüstungsunternehmen">Netzwerkausrüstungsunternehmen</option>
+                            <option value="Grossunternehmen">Großunternehmen</option>
+                            <option value="ASA">ASA (Applikationsserviceanbieter)</option>
+                            <option value="Systemintegrator">Systemintegrator</option>
+                            <option value="Klein_Mittelstaendige">Klein/Mittelständige Unternehmen</option>
+                            <option value="Nicht_Management_ISV">Nicht-Management-ISV</option>
+                            <option value="Management_ISV">Management ISV</option>
+                            <option value="Daten_Telekom_OEM">Daten/Telekom-OEM</option>
+                            <option value="Glashersteller">Glashersteller</option>
+                            <option value="Investmentfirma">Investmentfirma</option>
+                            <option value="Sporthalle">Sporthalle</option>
+                            <option value="Privatperson">Privatperson</option>
+                            <option value="Stadien">Stadien</option>
+                            <option value="Brauerei">Brauerei</option>
+                            <option value="Isoliertechnik">Isoliertechnik</option>
+                            <option value="Vermoegensverwaltung">Vermögensverwaltung</option>
+                            <option value="Spedition">Spedition</option>
+                            <option value="Bauprojektentwickler">Bauprojektentwickler</option>
+                            <option value="Textilindustrie">Textilindustrie</option>
+                            <option value="Maschinenbauunternehmen">Maschinenbauunternehmen</option>
+                            <option value="Metallindustrie">Metallindustrie</option>
+                            <option value="Immobilien">Immobilien</option>
+                            <option value="Elektroindustrie">Elektroindustrie</option>
+                            <option value="Dienstleistungen">Dienstleistungen</option>
+                            <option value="Lebensmittelindustrie">Lebensmittelindustrie</option>
+                            <option value="Logistik_Fulfillment">Logistik/Fulfillment</option>
+                            <option value="Rechenzentren">Rechenzentren</option>
+                            <option value="MedTech">MedTech</option>
+                            <option value="Entsorger">Entsorger</option>
+                            <option value="Automobilindustrie">Automobilindustrie</option>
+                            <option value="Moebelindustrie">Möbelindustrie</option>
+                            <option value="Gewerbeflaechen">Gewerbeflächen</option>
+                            <option value="Elektroinstallation">Elektroinstallation</option>
+                            <option value="Verpackungstechnik">Verpackungstechnik</option>
+                            <option value="Recyclingtechnik">Recyclingtechnik</option>
+                            <option value="Farben_Lackbranche">Farben- und Lackbranche</option>
+                            <option value="Hersteller_von_Batterien">Hersteller von Batterien</option>
+                            <option value="Landwirtschaft">Landwirtschaft</option>
+                            <option value="Kunststoffindustrie">Kunststoffindustrie</option>
+                            <option value="Papierindustrie">Papierindustrie</option>
+                            <option value="Grosshandel">Großhandel</option>
+                            <option value="Druckerei">Druckerei</option>
+                            <option value="Behoerde">Behörde</option>
+                            <option value="Frachtspeditionsdienst">Frachtspeditionsdienst</option>
+                            <option value="Lackindustrie">Lackindustrie</option>
+                            <option value="Elektrogeraete_Hersteller">Elektrogeräte Hersteller</option>
+                            <option value="Speicheraufruestung">Speicheraufrüstung</option>
+                            <option value="Optische_Netze">Optische Netze</option>
                             <option value="branche1">Branche 1</option>
                             <option value="branche2">Branche 2</option>
                         </select>
                     </div>
                 </div>
-                
                 <div class="form-group">
                     <h3 class="subsection-header">Kontaktperson</h3>
                     <div class="form-grid">
@@ -121,13 +177,11 @@
                         <input type="url" class="ios-input" name="linkedin" placeholder="LinkedIn Profil: https://www.linkedin.com/in/beispiel" style="grid-column: span 2;">
                     </div>
                 </div>
-                
                 <div class="form-group">
                     <h3 class="subsection-header">Gesprächsnotiz</h3>
                     <textarea class="ios-input ios-textarea required" name="gespraechsnotiz" 
                         placeholder="Gesprächsnotiz - Bitte ausführlich den Verlauf des Telefonats protokollieren (mind. 3 Sätze/Zeilen). Jede zusätzliche Information hilft unseren Kollegen im Termin.*" required></textarea>
                 </div>
-                
                 <button type="submit" class="ios-submit">Daten speichern</button>
             </form>
         `;
@@ -144,7 +198,7 @@
         });
     }
 
-    // Lädt die Daten aus dem Google Sheet und speichert die Zuordnung Bundesland -> Account Executive
+    // Lädt die Daten aus dem Google Sheet, erstellt die Zuordnung Bundesland -> Account Executive und füllt das Dropdown
     function loadAEData() {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', SHEET_URL, true);
@@ -176,31 +230,36 @@
         xhr.send();
     }
 
-    // Aktualisiert den Calendly-Bereich anhand des ausgewählten Bundeslandes
+    // Aktualisiert den Bereich mit der Account Executive-Info und lädt den entsprechenden Calendly-Widget
     function updateUI(ae, bundesland) {
+        var resultDiv = document.getElementById('ae-result');
         var calendlyDiv = document.getElementById('calendly-container');
-        if (!calendlyDiv) return;
+        if (!resultDiv || !calendlyDiv) return;
         if (ae) {
-            calendlyDiv.innerHTML = '<div class="calendly-inline-widget" ' +
-                'data-url="' + ae.calendlyLink + '?hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1&background_color=ffffff&hide_title=1" ' +
-                'style="min-width:320px;height:700px;">' +
+            resultDiv.innerHTML = '<div class="ae-info">' +
+                '<h3 class="ae-title">Zuständiger Account Executive für ' + bundesland + ':</h3>' +
+                '<div class="ae-details"><p><strong>Name:</strong> ' + ae.name + '</p></div>' +
                 '</div>';
-            if (window.Calendly) {
-                window.Calendly.initInlineWidget({
-                    url: ae.calendlyLink + '?hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1&background_color=ffffff&hide_title=1',
-                    parentElement: calendlyDiv.querySelector('.calendly-inline-widget')
-                });
+            if (ae.calendlyLink) {
+                calendlyDiv.innerHTML = '<div class="calendly-inline-widget" ' +
+                    'data-url="' + ae.calendlyLink + '?hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1&background_color=ffffff&hide_title=1" ' +
+                    'style="min-width:320px;height:700px;">' +
+                    '</div>';
+                if (window.Calendly) {
+                    window.Calendly.initInlineWidget({
+                        url: ae.calendlyLink + '?hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1&background_color=ffffff&hide_title=1',
+                        parentElement: calendlyDiv.querySelector('.calendly-inline-widget')
+                    });
+                }
             }
         }
     }
 
-    // Initialisierung: Styles hinzufügen, HTML-Struktur erzeugen, Daten laden und Event-Listener setzen
+    // Initialisiert das Script: Fügt Styles hinzu, baut die Struktur auf, lädt die Daten und setzt die Event-Listener
     function init() {
         addStyles();
         createStructure();
         loadAEData();
-
-        // Event-Listener für das Bundesland-Dropdown
         var bundeslandSelect = document.getElementById('bundesland-select');
         if (bundeslandSelect) {
             bundeslandSelect.addEventListener('change', function() {
@@ -210,8 +269,6 @@
                 }
             });
         }
-
-        // Formular-Handler
         var form = document.getElementById('contact-form');
         if (form) {
             form.addEventListener('submit', async function(e) {
@@ -221,9 +278,7 @@
                 try {
                     const response = await fetch(WEBHOOK_URL, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(data)
                     });
                     if (response.ok) {
@@ -240,7 +295,6 @@
         }
     }
 
-    // Lädt externe Abhängigkeiten (PapaParse und Calendly Widget)
     function loadDependencies() {
         var papaScript = document.createElement('script');
         papaScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js';
