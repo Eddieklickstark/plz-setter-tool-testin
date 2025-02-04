@@ -10,7 +10,7 @@
         css.type = 'text/css';
         css.innerHTML = [
             '.setter-tool { max-width: 800px; margin: 0 auto; padding: 20px; font-family: figtree, sans-serif; }',
-            '.section-header { font-size: 24px; color: #111827; margin-bottom: 16px; font-weight: 600; padding-bottom: 8px; border-bottom: 1px solid #E5E7EB; }',
+            '.section-header { font-size: 22px; color: #111827; margin-bottom: 16px; font-weight: 600; padding-bottom: 8px; border-bottom: 1px solid #E5E7EB; }',
             '.subsection-header { font-size: 18px; color: #374151; margin: 16px 0; font-weight: 500; }',
             '.bundesland-section { margin-bottom: 40px; }',
             '.bundesland-input-container { position: relative; margin-bottom: 20px; }',
@@ -25,7 +25,7 @@
             '.ios-textarea { min-height: 120px; resize: vertical; width: 100%; }',
             '.ios-submit { background: #046C4E; color: white; padding: 16px 32px; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; width: 100%; margin-top: 24px; transition: all 0.3s ease; }',
             '.ios-submit:hover { background: #065F46; }',
-            '.ae-info { background: #f7fafc; border: 1px solid #E5E7EB; border-radius: 8px; padding: 20px; margin-bottom: 20px; }'
+            '.ae-info { background: #f7fafc; border: 1px solid #E5E7EB; border-radius: 8px; padding: 20px; font-size: 18px; }'
         ].join('\n');
         document.head.appendChild(css);
     }
