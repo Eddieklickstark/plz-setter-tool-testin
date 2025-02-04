@@ -219,7 +219,7 @@
 
     function init() {
         addStyles();
-        createStructure();
+        createStructure();  // Diese Funktion erstellt das Formular
         loadAEData();
         
         var input = document.getElementById('bundesland-input');
@@ -298,4 +298,3 @@
         loadDependencies();
     }
 })();
-                                                 
