@@ -33,7 +33,7 @@
     // Baut die HTML-Struktur auf:
     // 1. Oben: Bundesland-Dropdown und AE-Info
     // 2. Calendly-Bereich
-    // 3. Das Kontaktformular mit den statischen Optionen
+    // 3. Das Kontaktformular mit den statischen Optionen und dem unsichtbaren Bundesland-Feld
     function createStructure() {
         var container = document.querySelector('.setter-tool');
         if (!container) return;
@@ -41,7 +41,7 @@
             <div class="bundesland-section">
                 <h2 class="section-header">Bundesland Auswahl</h2>
                 <div class="bundesland-input-container">
-                    <select id="bundesland-select" class="ios-input required" name="bundesland" required>
+                    <select id="bundesland-select" class="ios-input required">
                         <option value="">Bundesland wählen...</option>
                     </select>
                 </div>
@@ -52,6 +52,8 @@
             </div>
             <form id="contact-form" class="form-section">
                 <h2 class="section-header">Kontaktinformationen</h2>
+                <!-- Unsichtbares Feld für Bundesland -->
+                <input type="hidden" id="bundesland-hidden" name="bundesland" value="">
                 <div class="form-group">
                     <h3 class="subsection-header">Flächeninformationen</h3>
                     <div class="form-grid">
@@ -255,6 +257,8 @@
         if (bundeslandSelect) {
             bundeslandSelect.addEventListener('change', function() {
                 var selectedBundesland = this.value;
+                // Aktualisiere auch das unsichtbare Feld im Formular
+                document.getElementById('bundesland-hidden').value = selectedBundesland;
                 if (selectedBundesland) {
                     updateUI(aeMapping[selectedBundesland], selectedBundesland);
                 }
