@@ -17,17 +17,7 @@
             '.subsection-header { font-size: 18px; color: #374151; margin: 16px 0; font-weight: 500; }',
             
             // Bundesland Styles
-            '.bundesland-section { margin-bottom: 24px; }',
             '.bundesland-input-container { position: relative; margin-bottom: 20px; }',
-            '#bundesland-input { width: 100%; padding: 16px; font-size: 16px; border: 1px solid #E5E7EB; border-radius: 10px; }',
-            '#bundesland-input:focus { outline: none; border-color: #046C4E; box-shadow: 0 0 0 3px rgba(4, 108, 78, 0.1); }',
-            '.bundesland-dropdown { position: absolute; width: 100%; max-height: 300px; overflow-y: auto; background: white; border: 1px solid #E5E7EB; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 1000; display: none; }',
-            '.bundesland-option { padding: 12px 16px; cursor: pointer; }',
-            '.bundesland-option:hover { background: #F3F4F6; }',
-            
-            // Calendly Container
-            '.calendly-placeholder { background: #F9FAFB; border: 2px dashed #E5E7EB; border-radius: 12px; padding: 40px; text-align: center; color: #6B7280; min-height: 400px; display: flex; align-items: center; justify-content: center; margin: 20px 0; }',
-            '#calendly-container { margin: 20px 0; border-radius: 12px; overflow: hidden; background: white; min-height: 400px; }',
             
             // Form Styles
             '.form-section { margin-top: 40px; }',
@@ -46,7 +36,11 @@
             '.ios-submit:hover { background: #065F46; }',
             
             // Info Box
-            '.ae-info { background: #f7fafc; border: 1px solid #E5E7EB; border-radius: 8px; padding: 20px; margin-bottom: 20px; }'
+            '.ae-info { background: #f7fafc; border: 1px solid #E5E7EB; border-radius: 8px; padding: 20px; margin-bottom: 20px; }',
+            
+            // Calendly Container
+            '.calendly-placeholder { background: #F9FAFB; border: 2px dashed #E5E7EB; border-radius: 12px; padding: 40px; text-align: center; color: #6B7280; min-height: 400px; display: flex; align-items: center; justify-content: center; margin: 20px 0; }',
+            '#calendly-container { margin: 20px 0; border-radius: 12px; overflow: hidden; background: white; min-height: 400px; }'
         ].join('\n');
         document.head.appendChild(css);
     }
@@ -61,35 +55,39 @@
             calendlyDiv.innerHTML = '<div class="calendly-placeholder">Bitte wählen Sie zuerst ein Bundesland aus, um den Kalender zu laden.</div>';
         }
 
-        // Formular als String (Template Literal) definieren
-        // Hier wurde zusätzlich ein verstecktes Feld für das Bundesland eingefügt
+        // Formular mit Drop-Down für Bundesland erstellen
         var formHtml = `
             <form id="contact-form" class="form-section">
                 <h2 class="section-header">Kontaktinformationen</h2>
-                <input type="hidden" name="bundesland" id="bundesland-hidden">
+                
+                <div class="form-group">
+                    <h3 class="subsection-header">Bundesland</h3>
+                    <div class="bundesland-input-container">
+                        <select id="bundesland-select" class="ios-input required" name="bundesland" required>
+                            <option value="">Bundesland wählen...</option>
+                        </select>
+                    </div>
+                </div>
                 
                 <div class="form-group">
                     <h3 class="subsection-header">Flächeninformationen</h3>
                     <div class="form-grid">
                         <select class="ios-input required" name="flaechenart" required>
                             <option value="">Flächenart wählen*</option>
-                            <option value="Freifläche">Freifläche</option>
-                            <option value="Dachfläche">Dachfläche</option>
+                            <option value="option1">Option 1</option>
+                            <option value="option2">Option 2</option>
                         </select>
                         
                         <select class="ios-input required" name="flaechengroesse" required>
                             <option value="">Flächengröße wählen*</option>
-                            <option value="Weniger als 2.000 Quadratmeter">Weniger als 2.000 Quadratmeter</option>
-                            <option value="2.000 bis 4.000 Quadratmeter">2.000 bis 4.000 Quadratmeter</option>
-                            <option value="Mehr als 4.000 Quadratmeter">Mehr als 4.000 Quadratmeter</option>
+                            <option value="size1">Size 1</option>
+                            <option value="size2">Size 2</option>
                         </select>
 
                         <select class="ios-input required" name="stromverbrauch" required>
                             <option value="">Stromverbrauch wählen*</option>
-                            <option value="Unter 100.000 kWh">Unter 100.000 kWh</option>
-                            <option value="100.000 bis 500.000 kWh">100.000 bis 500.000 kWh</option>
-                            <option value="500.000 bis 1.000.000 kWh">500.000 bis 1.000.000 kWh</option>
-                            <option value="Über 1.000.000 kWh">Über 1.000.000 kWh</option>
+                            <option value="usage1">Usage 1</option>
+                            <option value="usage2">Usage 2</option>
                         </select>
 
                         <input type="number" class="ios-input required" name="standorte" placeholder="Anzahl der Standorte*" required>
@@ -112,60 +110,8 @@
                         <input type="text" class="ios-input required" name="firma" placeholder="Firma*" required>
                         <select class="ios-input required" name="branche" required>
                             <option value="">Branche wählen*</option>
-                            <option value="MSP">MSP (Management-Dienstleistungsanbieter)</option>
-                            <option value="another">Another option</option>
-                            <option value="URP">URP (Unternehmensressourcenplanung)</option>
-                            <option value="Regierung">Regierung/Militär</option>
-                            <option value="Speicherungs-Dienstleistungsanbieter">Speicherungs-Dienstleistungsanbieter</option>
-                            <option value="Dienstleistungsanbieter">Dienstleistungsanbieter</option>
-                            <option value="Netzwerkausrüstungsunternehmen">Netzwerkausrüstungsunternehmen</option>
-                            <option value="Grossunternehmen">Großunternehmen</option>
-                            <option value="ASA">ASA (Applikationsserviceanbieter)</option>
-                            <option value="Systemintegrator">Systemintegrator</option>
-                            <option value="Klein_Mittelstaendige">Klein/Mittelständige Unternehmen</option>
-                            <option value="Nicht_Management_ISV">Nicht-Management-ISV</option>
-                            <option value="Management_ISV">Management ISV</option>
-                            <option value="Daten_Telekom_OEM">Daten/Telekom-OEM</option>
-                            <option value="Glashersteller">Glashersteller</option>
-                            <option value="Investmentfirma">Investmentfirma</option>
-                            <option value="Sporthalle">Sporthalle</option>
-                            <option value="Privatperson">Privatperson</option>
-                            <option value="Stadien">Stadien</option>
-                            <option value="Brauerei">Brauerei</option>
-                            <option value="Isoliertechnik">Isoliertechnik</option>
-                            <option value="Vermoegensverwaltung">Vermögensverwaltung</option>
-                            <option value="Spedition">Spedition</option>
-                            <option value="Bauprojektentwickler">Bauprojektentwickler</option>
-                            <option value="Textilindustrie">Textilindustrie</option>
-                            <option value="Maschinenbauunternehmen">Maschinenbauunternehmen</option>
-                            <option value="Metallindustrie">Metallindustrie</option>
-                            <option value="Immobilien">Immobilien</option>
-                            <option value="Elektroindustrie">Elektroindustrie</option>
-                            <option value="Dienstleistungen">Dienstleistungen</option>
-                            <option value="Lebensmittelindustrie">Lebensmittelindustrie</option>
-                            <option value="Logistik_Fulfillment">Logistik/Fulfillment</option>
-                            <option value="Rechenzentren">Rechenzentren</option>
-                            <option value="MedTech">MedTech</option>
-                            <option value="Entsorger">Entsorger</option>
-                            <option value="Automobilindustrie">Automobilindustrie</option>
-                            <option value="Moebelindustrie">Möbelindustrie</option>
-                            <option value="Gewerbeflaechen">Gewerbeflächen</option>
-                            <option value="Elektroinstallation">Elektroinstallation</option>
-                            <option value="Verpackungstechnik">Verpackungstechnik</option>
-                            <option value="Recyclingtechnik">Recyclingtechnik</option>
-                            <option value="Farben_Lackbranche">Farben- und Lackbranche</option>
-                            <option value="Hersteller_von_Batterien">Hersteller von Batterien</option>
-                            <option value="Landwirtschaft">Landwirtschaft</option>
-                            <option value="Kunststoffindustrie">Kunststoffindustrie</option>
-                            <option value="Papierindustrie">Papierindustrie</option>
-                            <option value="Grosshandel">Großhandel</option>
-                            <option value="Druckerei">Druckerei</option>
-                            <option value="Behoerde">Behörde</option>
-                            <option value="Frachtspeditionsdienst">Frachtspeditionsdienst</option>
-                            <option value="Lackindustrie">Lackindustrie</option>
-                            <option value="Elektrogeraete_Hersteller">Elektrogeräte Hersteller</option>
-                            <option value="Speicheraufruestung">Speicheraufrüstung</option>
-                            <option value="Optische_Netze">Optische Netze</option>
+                            <option value="branche1">Branche 1</option>
+                            <option value="branche2">Branche 2</option>
                         </select>
                     </div>
                 </div>
@@ -177,6 +123,7 @@
                             <option value="">Anrede wählen*</option>
                             <option value="herr">Herr</option>
                             <option value="frau">Frau</option>
+                            <option value="divers">Divers</option>
                         </select>
                         <div></div>
                         <input type="text" class="ios-input required" name="vorname" placeholder="Vorname*" required>
@@ -201,6 +148,16 @@
         container.insertAdjacentHTML('beforeend', formHtml);
     }
 
+    // Füllt das Bundesland-DropDown mit den Optionen, die aus der Tabelle kommen
+    function updateBundeslandSelect() {
+        var select = document.getElementById('bundesland-select');
+        if (!select) return;
+        select.innerHTML = '<option value="">Bundesland wählen...</option>';
+        bundeslaender.forEach(function(bundesland) {
+            select.innerHTML += '<option value="' + bundesland + '">' + bundesland + '</option>';
+        });
+    }
+
     function loadAEData() {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', SHEET_URL, true);
@@ -221,27 +178,12 @@
                                 bundeslaender.push(row.Bundesland.trim());
                             }
                         });
+                        updateBundeslandSelect();
                     }
                 });
             }
         };
         xhr.send();
-    }
-
-    function updateDropdown(searchTerm) {
-        var dropdown = document.querySelector('.bundesland-dropdown');
-        var filteredBundeslaender = bundeslaender.filter(function(bundesland) {
-            return bundesland.toLowerCase().includes(searchTerm.toLowerCase());
-        });
-
-        if (filteredBundeslaender.length > 0 && searchTerm) {
-            dropdown.style.display = 'block';
-            dropdown.innerHTML = filteredBundeslaender.map(function(bundesland) {
-                return '<div class="bundesland-option">' + bundesland + '</div>';
-            }).join('');
-        } else {
-            dropdown.style.display = 'none';
-        }
     }
 
     function updateUI(ae, bundesland) {
@@ -250,15 +192,9 @@
         
         if (!resultDiv || !calendlyDiv) return;
         
-        // Aktualisiere zusätzlich das versteckte Bundesland-Feld
-        var bundeslandHidden = document.getElementById('bundesland-hidden');
-        if(bundeslandHidden) {
-            bundeslandHidden.value = bundesland;
-        }
-        
         if (ae) {
             resultDiv.innerHTML = '<div class="ae-info">' +
-                '<h3 class="ae-title">Zuständiger Closer für ' + bundesland + ':</h3>' +
+                '<h3 class="ae-title">Zuständiger Account Executive für ' + bundesland + ':</h3>' +
                 '<div class="ae-details"><p><strong>Name:</strong> ' + ae.name + '</p></div>' +
                 '</div>';
             
@@ -283,28 +219,13 @@
         createStructure();
         loadAEData();
         
-        var input = document.getElementById('bundesland-input');
-        var dropdown = document.querySelector('.bundesland-dropdown');
-        
-        if (input && dropdown) {
-            input.addEventListener('input', function() {
-                updateDropdown(this.value);
-            });
-            
-            document.addEventListener('click', function(e) {
-                if (e.target.classList.contains('bundesland-option')) {
-                    var selectedBundesland = e.target.textContent;
-                    input.value = selectedBundesland;
-                    dropdown.style.display = 'none';
+        // Event-Listener für das Bundesland-DropDown
+        var bundeslandSelect = document.getElementById('bundesland-select');
+        if (bundeslandSelect) {
+            bundeslandSelect.addEventListener('change', function() {
+                var selectedBundesland = this.value;
+                if (selectedBundesland) {
                     updateUI(aeMapping[selectedBundesland], selectedBundesland);
-                } else if (!e.target.classList.contains('bundesland-input')) {
-                    dropdown.style.display = 'none';
-                }
-            });
-            
-            input.addEventListener('focus', function() {
-                if (this.value) {
-                    updateDropdown(this.value);
                 }
             });
         }
