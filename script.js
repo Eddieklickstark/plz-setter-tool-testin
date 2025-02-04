@@ -157,7 +157,6 @@
                             <option value="">Anrede wählen*</option>
                             <option value="herr">Herr</option>
                             <option value="frau">Frau</option>
-                            <option value="divers">Divers</option>
                         </select>
                         <div></div>
                         <input type="text" class="ios-input required" name="vorname" placeholder="Vorname*" required>
@@ -170,7 +169,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <h3 class="subsection-header">Gesprächsnotiz</h3>
+                    <h3 class="subsection-header">Gesprächsnotiz*</h3>
                     <textarea class="ios-input ios-textarea required" name="gespraechsnotiz" 
                         placeholder="Gesprächsnotiz - Bitte ausführlich den Verlauf des Telefonats protokollieren (mind. 3 Sätze/Zeilen). Jede zusätzliche Information hilft unseren Kollegen im Termin.*" required></textarea>
                 </div>
