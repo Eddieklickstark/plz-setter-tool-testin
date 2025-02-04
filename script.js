@@ -8,39 +8,29 @@
         var css = document.createElement('style');
         css.type = 'text/css';
         css.innerHTML = [
-            // Container Styles
+            // Container & allgemeine Styles
             '.setter-tool { max-width: 800px; margin: 0 auto; padding: 20px; font-family: figtree, sans-serif; }',
             '.section { margin-bottom: 40px; background: white; padding: 24px; border-radius: 12px; }',
-            
-            // Headers
             '.section-header { font-size: 24px; color: #111827; margin-bottom: 24px; font-weight: 600; padding-bottom: 8px; border-bottom: 1px solid #E5E7EB; }',
             '.subsection-header { font-size: 18px; color: #374151; margin: 16px 0; font-weight: 500; }',
-            
-            // Bundesland Styles
-            '.bundesland-input-container { position: relative; margin-bottom: 20px; }',
-            
-            // Form Styles
+            // Form & Input Styles
             '.form-section { margin-top: 40px; }',
             '.form-group { margin-bottom: 32px; }',
             '.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }',
             '@media (max-width: 640px) { .form-grid { grid-template-columns: 1fr; } }',
-            
-            // Input Styles
             '.ios-input, .ios-select { width: 100%; padding: 12px; border: 1px solid #E5E7EB; border-radius: 10px; font-size: 16px; background: #FAFAFA; }',
             '.ios-input:focus, .ios-select:focus { outline: none; border-color: #046C4E; background: #FFFFFF; box-shadow: 0 0 0 3px rgba(4, 108, 78, 0.1); }',
             '.ios-input.required { border-left: 3px solid #046C4E; }',
             '.ios-textarea { min-height: 120px; resize: vertical; width: 100%; }',
-            
-            // Button Styles
             '.ios-submit { background: #046C4E; color: white; padding: 16px 32px; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; width: 100%; margin-top: 24px; transition: all 0.3s ease; }',
             '.ios-submit:hover { background: #065F46; }',
-            
             // Info Box
             '.ae-info { background: #f7fafc; border: 1px solid #E5E7EB; border-radius: 8px; padding: 20px; margin-bottom: 20px; }',
-            
             // Calendly Container
             '.calendly-placeholder { background: #F9FAFB; border: 2px dashed #E5E7EB; border-radius: 12px; padding: 40px; text-align: center; color: #6B7280; min-height: 400px; display: flex; align-items: center; justify-content: center; margin: 20px 0; }',
-            '#calendly-container { margin: 20px 0; border-radius: 12px; overflow: hidden; background: white; min-height: 400px; }'
+            '#calendly-container { margin: 20px 0; border-radius: 12px; overflow: hidden; background: white; min-height: 400px; }',
+            // Spezifisch für das Bundesland-Dropdown
+            '.bundesland-input-container { position: relative; margin-bottom: 20px; }'
         ].join('\n');
         document.head.appendChild(css);
     }
@@ -49,13 +39,13 @@
         var container = document.querySelector('.setter-tool');
         if (!container) return;
 
-        // Calendly-Platzhalter hinzufügen
+        // Calendly-Platzhalter
         var calendlyDiv = document.getElementById('calendly-container');
         if (calendlyDiv) {
             calendlyDiv.innerHTML = '<div class="calendly-placeholder">Bitte wählen Sie zuerst ein Bundesland aus, um den Kalender zu laden.</div>';
         }
 
-        // Formular mit Drop-Down für Bundesland erstellen
+        // Formular inkl. Bundesland-Dropdown
         var formHtml = `
             <form id="contact-form" class="form-section">
                 <h2 class="section-header">Kontaktinformationen</h2>
@@ -77,23 +67,20 @@
                             <option value="option1">Option 1</option>
                             <option value="option2">Option 2</option>
                         </select>
-                        
                         <select class="ios-input required" name="flaechengroesse" required>
                             <option value="">Flächengröße wählen*</option>
                             <option value="size1">Size 1</option>
                             <option value="size2">Size 2</option>
                         </select>
-
                         <select class="ios-input required" name="stromverbrauch" required>
                             <option value="">Stromverbrauch wählen*</option>
                             <option value="usage1">Usage 1</option>
                             <option value="usage2">Usage 2</option>
                         </select>
-
                         <input type="number" class="ios-input required" name="standorte" placeholder="Anzahl der Standorte*" required>
                     </div>
                 </div>
-
+                
                 <div class="form-group">
                     <h3 class="subsection-header">Standortinformationen</h3>
                     <div class="form-grid">
@@ -103,7 +90,7 @@
                         <input type="text" class="ios-input required" name="stadt" placeholder="Standort Stadt*" required>
                     </div>
                 </div>
-
+                
                 <div class="form-group">
                     <h3 class="subsection-header">Unternehmensinformationen</h3>
                     <div class="form-grid">
@@ -115,7 +102,7 @@
                         </select>
                     </div>
                 </div>
-
+                
                 <div class="form-group">
                     <h3 class="subsection-header">Kontaktperson</h3>
                     <div class="form-grid">
@@ -135,20 +122,20 @@
                         <input type="url" class="ios-input" name="linkedin" placeholder="LinkedIn Profil: https://www.linkedin.com/in/beispiel" style="grid-column: span 2;">
                     </div>
                 </div>
-
+                
                 <div class="form-group">
                     <h3 class="subsection-header">Gesprächsnotiz</h3>
                     <textarea class="ios-input ios-textarea required" name="gespraechsnotiz" 
                         placeholder="Gesprächsnotiz - Bitte ausführlich den Verlauf des Telefonats protokollieren (mind. 3 Sätze/Zeilen). Jede zusätzliche Information hilft unseren Kollegen im Termin.*" required></textarea>
                 </div>
-
+                
                 <button type="submit" class="ios-submit">Daten speichern</button>
             </form>
         `;
         container.insertAdjacentHTML('beforeend', formHtml);
     }
 
-    // Füllt das Bundesland-DropDown mit den Optionen, die aus der Tabelle kommen
+    // Füllt das Bundesland-Dropdown mit den Optionen aus der Google Sheet-Spalte "Bundesland"
     function updateBundeslandSelect() {
         var select = document.getElementById('bundesland-select');
         if (!select) return;
@@ -171,11 +158,14 @@
                         bundeslaender = [];
                         results.data.forEach(function(row) {
                             if (row.Bundesland && row.name) {
-                                aeMapping[row.Bundesland.trim()] = {
+                                var bl = row.Bundesland.trim();
+                                aeMapping[bl] = {
                                     name: row.name.trim(),
                                     calendlyLink: row.calendly_link ? row.calendly_link.trim() : ''
                                 };
-                                bundeslaender.push(row.Bundesland.trim());
+                                if (bundeslaender.indexOf(bl) === -1) {
+                                    bundeslaender.push(bl);
+                                }
                             }
                         });
                         updateBundeslandSelect();
@@ -189,21 +179,17 @@
     function updateUI(ae, bundesland) {
         var resultDiv = document.getElementById('ae-result');
         var calendlyDiv = document.getElementById('calendly-container');
-        
         if (!resultDiv || !calendlyDiv) return;
-        
         if (ae) {
             resultDiv.innerHTML = '<div class="ae-info">' +
                 '<h3 class="ae-title">Zuständiger Account Executive für ' + bundesland + ':</h3>' +
                 '<div class="ae-details"><p><strong>Name:</strong> ' + ae.name + '</p></div>' +
                 '</div>';
-            
             if (ae.calendlyLink) {
                 calendlyDiv.innerHTML = '<div class="calendly-inline-widget" ' +
                     'data-url="' + ae.calendlyLink + '?hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1&background_color=ffffff&hide_title=1" ' +
                     'style="min-width:320px;height:700px;">' +
                     '</div>';
-                
                 if (window.Calendly) {
                     window.Calendly.initInlineWidget({
                         url: ae.calendlyLink + '?hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1&background_color=ffffff&hide_title=1',
@@ -218,8 +204,8 @@
         addStyles();
         createStructure();
         loadAEData();
-        
-        // Event-Listener für das Bundesland-DropDown
+
+        // Event-Listener für das Bundesland-Dropdown
         var bundeslandSelect = document.getElementById('bundesland-select');
         if (bundeslandSelect) {
             bundeslandSelect.addEventListener('change', function() {
@@ -235,10 +221,8 @@
         if (form) {
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
-                
                 const formData = new FormData(e.target);
                 const data = Object.fromEntries(formData);
-                
                 try {
                     const response = await fetch(WEBHOOK_URL, {
                         method: 'POST',
@@ -247,7 +231,6 @@
                         },
                         body: JSON.stringify(data)
                     });
-                    
                     if (response.ok) {
                         alert('Daten wurden erfolgreich gespeichert!');
                         form.reset();
