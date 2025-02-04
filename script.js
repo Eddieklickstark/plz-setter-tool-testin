@@ -59,8 +59,6 @@
                             <option value="">Flächenart wählen*</option>
                             <option value="Freifläche">Freifläche</option>
                             <option value="Dachfläche">Dachfläche</option>
-                            <option value="option1">Option 1</option>
-                            <option value="option2">Option 2</option>
                         </select>
                         
                         <select class="ios-input required" name="flaechengroesse" required>
@@ -68,8 +66,6 @@
                             <option value="Weniger als 2.000 Quadratmeter">Weniger als 2.000 Quadratmeter</option>
                             <option value="2.000 bis 4.000 Quadratmeter">2.000 bis 4.000 Quadratmeter</option>
                             <option value="Mehr als 4.000 Quadratmeter">Mehr als 4.000 Quadratmeter</option>
-                            <option value="size1">Size 1</option>
-                            <option value="size2">Size 2</option>
                         </select>
                         
                         <select class="ios-input required" name="stromverbrauch" required>
@@ -78,8 +74,6 @@
                             <option value="100.000 bis 500.000 kWh">100.000 bis 500.000 kWh</option>
                             <option value="500.000 bis 1.000.000 kWh">500.000 bis 1.000.000 kWh</option>
                             <option value="Über 1.000.000 kWh">Über 1.000.000 kWh</option>
-                            <option value="usage1">Usage 1</option>
-                            <option value="usage2">Usage 2</option>
                         </select>
                         <input type="number" class="ios-input required" name="standorte" placeholder="Anzahl der Standorte*" required>
                     </div>
@@ -153,8 +147,6 @@
                             <option value="Elektrogeraete_Hersteller">Elektrogeräte Hersteller</option>
                             <option value="Speicheraufruestung">Speicheraufrüstung</option>
                             <option value="Optische_Netze">Optische Netze</option>
-                            <option value="branche1">Branche 1</option>
-                            <option value="branche2">Branche 2</option>
                         </select>
                     </div>
                 </div>
