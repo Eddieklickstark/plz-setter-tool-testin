@@ -70,20 +70,23 @@
                     <div class="form-grid">
                         <select class="ios-input required" name="flaechenart" required>
                             <option value="">Flächenart wählen*</option>
-                            <option value="option1">Option 1</option>
-                            <option value="option2">Option 2</option>
+                            <option value="freiflache">Freifläche</option>
+                            <option value="dachflache">Dachfläche</option>
                         </select>
                         
                         <select class="ios-input required" name="flaechengroesse" required>
                             <option value="">Flächengröße wählen*</option>
-                            <option value="size1">Size 1</option>
-                            <option value="size2">Size 2</option>
+                            <option value="unter2000">Weniger als 2.000 Quadratmeter</option>
+                            <option value="2000bis4000">2.000 bis 4.000 Quadratmeter</option>
+                            <option value="uber4000">Mehr als 4.000 Quadratmeter</option>
                         </select>
 
                         <select class="ios-input required" name="stromverbrauch" required>
                             <option value="">Stromverbrauch wählen*</option>
-                            <option value="usage1">Usage 1</option>
-                            <option value="usage2">Usage 2</option>
+                            <option value="unter100000">Unter 100.000 kWh</option>
+                            <option value="100000bis500000">100.000 bis 500.000 kWh</option>
+                            <option value="500000bis1000000">500.000 bis 1.000.000 kWh</option>
+                            <option value="uber1000000">Über 1.000.000 kWh</option>
                         </select>
 
                         <input type="number" class="ios-input required" name="standorte" placeholder="Anzahl der Standorte*" required>
@@ -106,8 +109,13 @@
                         <input type="text" class="ios-input required" name="firma" placeholder="Firma*" required>
                         <select class="ios-input required" name="branche" required>
                             <option value="">Branche wählen*</option>
-                            <option value="branche1">Branche 1</option>
-                            <option value="branche2">Branche 2</option>
+                            <option value="glasersteller">Glashersteller</option>
+                            <option value="investmentirma">Investmentfirma</option>
+                            <option value="sporthalle">Sporthalle</option>
+                            <option value="privatperson">Privatperson</option>
+                            <option value="stadien">Stadien</option>
+                            <option value="brauerei">Brauerei</option>
+                            <option value="isoliertechnik">Isoliertechnik</option>
                         </select>
                     </div>
                 </div>
@@ -119,7 +127,6 @@
                             <option value="">Anrede wählen*</option>
                             <option value="herr">Herr</option>
                             <option value="frau">Frau</option>
-                            <option value="divers">Divers</option>
                         </select>
                         <div></div>
                         <input type="text" class="ios-input required" name="vorname" placeholder="Vorname*" required>
@@ -171,130 +178,3 @@
         };
         xhr.send();
     }
-
-    function updateDropdown(searchTerm) {
-        var dropdown = document.querySelector('.bundesland-dropdown');
-        var filteredBundeslaender = bundeslaender.filter(function(bundesland) {
-            return bundesland.toLowerCase().includes(searchTerm.toLowerCase());
-        });
-
-        if (filteredBundeslaender.length > 0 && searchTerm) {
-            dropdown.style.display = 'block';
-            dropdown.innerHTML = filteredBundeslaender.map(function(bundesland) {
-                return '<div class="bundesland-option">' + bundesland + '</div>';
-            }).join('');
-        } else {
-            dropdown.style.display = 'none';
-        }
-    }
-
-    function updateUI(ae, bundesland) {
-        var resultDiv = document.getElementById('ae-result');
-        var calendlyDiv = document.getElementById('calendly-container');
-        
-        if (!resultDiv || !calendlyDiv) return;
-        
-        if (ae) {
-            resultDiv.innerHTML = '<div class="ae-info">' +
-                '<h3 class="ae-title">Zuständiger Closer für ' + bundesland + ':</h3>' +
-                '<div class="ae-details"><p><strong>Name:</strong> ' + ae.name + '</p></div>' +
-                '</div>';
-            
-            if (ae.calendlyLink) {
-                calendlyDiv.innerHTML = '<div class="calendly-inline-widget" ' +
-                    'data-url="' + ae.calendlyLink + '?hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1&background_color=ffffff&hide_title=1" ' +
-                    'style="min-width:320px;height:700px;">' +
-                    '</div>';
-                
-                if (window.Calendly) {
-                    window.Calendly.initInlineWidget({
-                        url: ae.calendlyLink + '?hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1&background_color=ffffff&hide_title=1',
-                        parentElement: calendlyDiv.querySelector('.calendly-inline-widget')
-                    });
-                }
-            }
-        }
-    }
-
-    function init() {
-        addStyles();
-        createStructure();
-        loadAEData();
-        
-        var input = document.getElementById('bundesland-input');
-        var dropdown = document.querySelector('.bundesland-dropdown');
-        
-        if (input && dropdown) {
-            input.addEventListener('input', function() {
-                updateDropdown(this.value);
-            });
-            
-            document.addEventListener('click', function(e) {
-                if (e.target.classList.contains('bundesland-option')) {
-                    var selectedBundesland = e.target.textContent;
-                    input.value = selectedBundesland;
-                    dropdown.style.display = 'none';
-                    updateUI(aeMapping[selectedBundesland], selectedBundesland);
-                } else if (!e.target.classList.contains('bundesland-input')) {
-                    dropdown.style.display = 'none';
-                }
-            });
-            
-            input.addEventListener('focus', function() {
-                if (this.value) {
-                    updateDropdown(this.value);
-                }
-            });
-        }
-
-        // Formular-Handler
-        var form = document.getElementById('contact-form');
-        if (form) {
-            form.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                
-                const formData = new FormData(e.target);
-                const data = Object.fromEntries(formData);
-                
-                try {
-                    const response = await fetch(WEBHOOK_URL, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(data)
-                    });
-                    
-                    if (response.ok) {
-                        alert('Daten wurden erfolgreich gespeichert!');
-                        form.reset();
-                    } else {
-                        throw new Error('Netzwerk-Antwort war nicht ok');
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert('Fehler beim Speichern der Daten. Bitte versuchen Sie es erneut.');
-                }
-            });
-        }
-    }
-
-    function loadDependencies() {
-        var papaScript = document.createElement('script');
-        papaScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js';
-        papaScript.onload = function() {
-            var calendlyScript = document.createElement('script');
-            calendlyScript.src = 'https://assets.calendly.com/assets/external/widget.js';
-            calendlyScript.async = true;
-            calendlyScript.onload = init;
-            document.head.appendChild(calendlyScript);
-        };
-        document.head.appendChild(papaScript);
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', loadDependencies);
-    } else {
-        loadDependencies();
-    }
-})();
