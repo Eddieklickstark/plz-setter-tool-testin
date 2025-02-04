@@ -4,60 +4,59 @@
     var aeMapping = {};
     var bundeslaender = [];
 
+    // Fügt Styles hinzu
     function addStyles() {
         var css = document.createElement('style');
         css.type = 'text/css';
         css.innerHTML = [
-            // Container & allgemeine Styles
+            // Allgemeine Container- und Textstile
             '.setter-tool { max-width: 800px; margin: 0 auto; padding: 20px; font-family: figtree, sans-serif; }',
-            '.section { margin-bottom: 40px; background: white; padding: 24px; border-radius: 12px; }',
-            '.section-header { font-size: 24px; color: #111827; margin-bottom: 24px; font-weight: 600; padding-bottom: 8px; border-bottom: 1px solid #E5E7EB; }',
+            '.section-header { font-size: 24px; color: #111827; margin-bottom: 16px; font-weight: 600; padding-bottom: 8px; border-bottom: 1px solid #E5E7EB; }',
             '.subsection-header { font-size: 18px; color: #374151; margin: 16px 0; font-weight: 500; }',
-            // Form & Input Styles
+            // Styles für den Bundesland-Bereich
+            '.bundesland-section { margin-bottom: 40px; }',
+            '.bundesland-input-container { position: relative; margin-bottom: 20px; }',
+            '.ios-input { width: 100%; padding: 12px; border: 1px solid #E5E7EB; border-radius: 10px; font-size: 16px; background: #FAFAFA; }',
+            '.ios-input:focus { outline: none; border-color: #046C4E; background: #FFFFFF; box-shadow: 0 0 0 3px rgba(4, 108, 78, 0.1); }',
+            // Calendly Container
+            '.calendly-placeholder { background: #F9FAFB; border: 2px dashed #E5E7EB; border-radius: 12px; padding: 40px; text-align: center; color: #6B7280; min-height: 400px; display: flex; align-items: center; justify-content: center; margin: 20px 0; }',
+            '#calendly-container { margin: 20px 0; border-radius: 12px; overflow: hidden; background: white; min-height: 400px; }',
+            // Formular-Styles
             '.form-section { margin-top: 40px; }',
             '.form-group { margin-bottom: 32px; }',
             '.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }',
             '@media (max-width: 640px) { .form-grid { grid-template-columns: 1fr; } }',
-            '.ios-input, .ios-select { width: 100%; padding: 12px; border: 1px solid #E5E7EB; border-radius: 10px; font-size: 16px; background: #FAFAFA; }',
-            '.ios-input:focus, .ios-select:focus { outline: none; border-color: #046C4E; background: #FFFFFF; box-shadow: 0 0 0 3px rgba(4, 108, 78, 0.1); }',
-            '.ios-input.required { border-left: 3px solid #046C4E; }',
             '.ios-textarea { min-height: 120px; resize: vertical; width: 100%; }',
             '.ios-submit { background: #046C4E; color: white; padding: 16px 32px; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; width: 100%; margin-top: 24px; transition: all 0.3s ease; }',
             '.ios-submit:hover { background: #065F46; }',
-            // Info Box
-            '.ae-info { background: #f7fafc; border: 1px solid #E5E7EB; border-radius: 8px; padding: 20px; margin-bottom: 20px; }',
-            // Calendly Container
-            '.calendly-placeholder { background: #F9FAFB; border: 2px dashed #E5E7EB; border-radius: 12px; padding: 40px; text-align: center; color: #6B7280; min-height: 400px; display: flex; align-items: center; justify-content: center; margin: 20px 0; }',
-            '#calendly-container { margin: 20px 0; border-radius: 12px; overflow: hidden; background: white; min-height: 400px; }',
-            // Spezifisch für das Bundesland-Dropdown
-            '.bundesland-input-container { position: relative; margin-bottom: 20px; }'
+            // Info-Box
+            '.ae-info { background: #f7fafc; border: 1px solid #E5E7EB; border-radius: 8px; padding: 20px; margin-bottom: 20px; }'
         ].join('\n');
         document.head.appendChild(css);
     }
 
+    // Baut die grundlegende HTML-Struktur auf:
+    // 1. Ein oberer Bereich mit dem Bundesland-Dropdown
+    // 2. Der Calendly-Bereich, der den Kalender lädt
+    // 3. Das Formular mit den weiteren Feldern, in das später die Daten eingetragen werden
     function createStructure() {
         var container = document.querySelector('.setter-tool');
         if (!container) return;
 
-        // Calendly-Platzhalter
-        var calendlyDiv = document.getElementById('calendly-container');
-        if (calendlyDiv) {
-            calendlyDiv.innerHTML = '<div class="calendly-placeholder">Bitte wählen Sie zuerst ein Bundesland aus, um den Kalender zu laden.</div>';
-        }
-
-        // Formular inkl. Bundesland-Dropdown
-        var formHtml = `
+        var html = `
+            <div class="bundesland-section">
+                <h2 class="section-header">Bundesland Auswahl</h2>
+                <div class="bundesland-input-container">
+                    <select id="bundesland-select" class="ios-input required" name="bundesland" required>
+                        <option value="">Bundesland wählen...</option>
+                    </select>
+                </div>
+            </div>
+            <div id="calendly-container">
+                <div class="calendly-placeholder">Bitte wählen Sie zuerst ein Bundesland aus, um den Kalender zu laden.</div>
+            </div>
             <form id="contact-form" class="form-section">
                 <h2 class="section-header">Kontaktinformationen</h2>
-                
-                <div class="form-group">
-                    <h3 class="subsection-header">Bundesland</h3>
-                    <div class="bundesland-input-container">
-                        <select id="bundesland-select" class="ios-input required" name="bundesland" required>
-                            <option value="">Bundesland wählen...</option>
-                        </select>
-                    </div>
-                </div>
                 
                 <div class="form-group">
                     <h3 class="subsection-header">Flächeninformationen</h3>
@@ -132,10 +131,10 @@
                 <button type="submit" class="ios-submit">Daten speichern</button>
             </form>
         `;
-        container.insertAdjacentHTML('beforeend', formHtml);
+        container.innerHTML = html;
     }
 
-    // Füllt das Bundesland-Dropdown mit den Optionen aus der Google Sheet-Spalte "Bundesland"
+    // Füllt das Bundesland-Dropdown mit den Werten aus der Spalte "Bundesland" des Google Sheets
     function updateBundeslandSelect() {
         var select = document.getElementById('bundesland-select');
         if (!select) return;
@@ -145,6 +144,7 @@
         });
     }
 
+    // Lädt die Daten aus dem Google Sheet und speichert die Zuordnung Bundesland -> Account Executive
     function loadAEData() {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', SHEET_URL, true);
@@ -176,30 +176,25 @@
         xhr.send();
     }
 
+    // Aktualisiert den Calendly-Bereich anhand des ausgewählten Bundeslandes
     function updateUI(ae, bundesland) {
-        var resultDiv = document.getElementById('ae-result');
         var calendlyDiv = document.getElementById('calendly-container');
-        if (!resultDiv || !calendlyDiv) return;
+        if (!calendlyDiv) return;
         if (ae) {
-            resultDiv.innerHTML = '<div class="ae-info">' +
-                '<h3 class="ae-title">Zuständiger Account Executive für ' + bundesland + ':</h3>' +
-                '<div class="ae-details"><p><strong>Name:</strong> ' + ae.name + '</p></div>' +
+            calendlyDiv.innerHTML = '<div class="calendly-inline-widget" ' +
+                'data-url="' + ae.calendlyLink + '?hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1&background_color=ffffff&hide_title=1" ' +
+                'style="min-width:320px;height:700px;">' +
                 '</div>';
-            if (ae.calendlyLink) {
-                calendlyDiv.innerHTML = '<div class="calendly-inline-widget" ' +
-                    'data-url="' + ae.calendlyLink + '?hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1&background_color=ffffff&hide_title=1" ' +
-                    'style="min-width:320px;height:700px;">' +
-                    '</div>';
-                if (window.Calendly) {
-                    window.Calendly.initInlineWidget({
-                        url: ae.calendlyLink + '?hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1&background_color=ffffff&hide_title=1',
-                        parentElement: calendlyDiv.querySelector('.calendly-inline-widget')
-                    });
-                }
+            if (window.Calendly) {
+                window.Calendly.initInlineWidget({
+                    url: ae.calendlyLink + '?hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1&background_color=ffffff&hide_title=1',
+                    parentElement: calendlyDiv.querySelector('.calendly-inline-widget')
+                });
             }
         }
     }
 
+    // Initialisierung: Styles hinzufügen, HTML-Struktur erzeugen, Daten laden und Event-Listener setzen
     function init() {
         addStyles();
         createStructure();
@@ -245,6 +240,7 @@
         }
     }
 
+    // Lädt externe Abhängigkeiten (PapaParse und Calendly Widget)
     function loadDependencies() {
         var papaScript = document.createElement('script');
         papaScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js';
