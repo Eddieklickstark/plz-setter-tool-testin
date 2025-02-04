@@ -79,17 +79,17 @@
                         
                         <select class="ios-input required" name="flaechengroesse" required>
                             <option value="">Flächengröße wählen*</option>
-                            <option value="weniger_2000">Weniger als 2.000 Quadratmeter</option>
-                            <option value="2000_bis_4000">2.000 bis 4.000 Quadratmeter</option>
-                            <option value="mehr_4000">Mehr als 4.000 Quadratmeter</option>
+                            <option value="Weniger als 2.000 Quadratmeter">Weniger als 2.000 Quadratmeter</option>
+                            <option value="2.000 bis 4.000 Quadratmeter">2.000 bis 4.000 Quadratmeter</option>
+                            <option value="Mehr als 4.000 Quadratmeter">Mehr als 4.000 Quadratmeter</option>
                         </select>
 
                         <select class="ios-input required" name="stromverbrauch" required>
                             <option value="">Stromverbrauch wählen*</option>
-                            <option value="unter_100000">Unter 100.000 kWh</option>
-                            <option value="100000_bis_500000">100.000 bis 500.000 kWh</option>
-                            <option value="500000_bis_1000000">500.000 bis 1.000.000 kWh</option>
-                            <option value="ueber_1000000">Über 1.000.000 kWh</option>
+                            <option value="Unter 100.000 kWh">Unter 100.000 kWh</option>
+                            <option value="100.000 bis 500.000 kWh">100.000 bis 500.000 kWh</option>
+                            <option value="500.000 bis 1.000.000 kWh">500.000 bis 1.000.000 kWh</option>
+                            <option value="Über 1.000.000 kWh">Über 1.000.000 kWh</option>
                         </select>
 
                         <input type="number" class="ios-input required" name="standorte" placeholder="Anzahl der Standorte*" required>
