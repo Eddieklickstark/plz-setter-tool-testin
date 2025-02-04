@@ -4,7 +4,6 @@
     var aeMapping = {};
     var bundeslaender = [];
 
-    // Fügen Sie die ursprüngliche addStyles()-Funktion vollständig wieder hinzu
     function addStyles() {
         var css = document.createElement('style');
         css.type = 'text/css';
@@ -51,8 +50,6 @@
         ].join('\n');
         document.head.appendChild(css);
     }
-
-    // Vollständige createStructure()-Funktion wiederherstellen
     function createStructure() {
         var container = document.querySelector('.setter-tool');
         if (!container) return;
@@ -148,15 +145,156 @@
         container.insertAdjacentHTML('beforeend', formHtml);
     }
 
-    // Restlicher Code bleibt unverändert wie in der vorherigen Version
+    function loadAEData() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', SHEET_URL, true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                Papa.parse(xhr.responseText, {
+                    header: true,
+                    skipEmptyLines: true,
+                    complete: function(results) {
+                        aeMapping = {};
+                        bundeslaender = [];
+                        results.data.forEach(function(row) {
+                            if (row.Bundesland && row.name) {
+                                aeMapping[row.Bundesland.trim()] = {
+                                    name: row.name.trim(),
+                                    calendlyLink: row.calendly_link ? row.calendly_link.trim() : ''
+                                };
+                                bundeslaender.push(row.Bundesland.trim());
+                            }
+                        });
+                    }
+                });
+            }
+        };
+        xhr.send();
+    }
+
+    function updateDropdown(searchTerm) {
+        var dropdown = document.querySelector('.bundesland-dropdown');
+        var filteredBundeslaender = bundeslaender.filter(function(bundesland) {
+            return bundesland.toLowerCase().includes(searchTerm.toLowerCase());
+        });
+
+        if (filteredBundeslaender.length > 0 && searchTerm) {
+            dropdown.style.display = 'block';
+            dropdown.innerHTML = filteredBundeslaender.map(function(bundesland) {
+                return '<div class="bundesland-option">' + bundesland + '</div>';
+            }).join('');
+        } else {
+            dropdown.style.display = 'none';
+        }
+    }
+
+    function updateUI(ae, bundesland) {
+        var resultDiv = document.getElementById('ae-result');
+        var calendlyDiv = document.getElementById('calendly-container');
+        
+        if (!resultDiv || !calendlyDiv) return;
+        
+        if (ae) {
+            resultDiv.innerHTML = '<div class="ae-info">' +
+                '<h3 class="ae-title">Zuständiger Closer für ' + bundesland + ':</h3>' +
+                '<div class="ae-details"><p><strong>Name:</strong> ' + ae.name + '</p></div>' +
+                '</div>';
+            
+            if (ae.calendlyLink) {
+                calendlyDiv.innerHTML = '<div class="calendly-inline-widget" ' +
+                    'data-url="' + ae.calendlyLink + '?hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1&background_color=ffffff&hide_title=1" ' +
+                    'style="min-width:320px;height:700px;">' +
+                    '</div>';
+                
+                if (window.Calendly) {
+                    window.Calendly.initInlineWidget({
+                        url: ae.calendlyLink + '?hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1&background_color=ffffff&hide_title=1',
+                        parentElement: calendlyDiv.querySelector('.calendly-inline-widget')
+                    });
+                }
+            }
+        }
+    }
 
     function init() {
         addStyles();
-        createStructure();  // Wichtig: Diese Zeile wieder hinzufügen
+        createStructure();
         loadAEData();
         
-        // Restlicher init-Code bleibt gleich...
+        var input = document.getElementById('bundesland-input');
+        var dropdown = document.querySelector('.bundesland-dropdown');
+        
+        if (input && dropdown) {
+            input.addEventListener('input', function() {
+                updateDropdown(this.value);
+            });
+            
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('bundesland-option')) {
+                    var selectedBundesland = e.target.textContent;
+                    input.value = selectedBundesland;
+                    dropdown.style.display = 'none';
+                    updateUI(aeMapping[selectedBundesland], selectedBundesland);
+                } else if (!e.target.classList.contains('bundesland-input')) {
+                    dropdown.style.display = 'none';
+                }
+            });
+            
+            input.addEventListener('focus', function() {
+                if (this.value) {
+                    updateDropdown(this.value);
+                }
+            });
+        }
+
+        // Formular-Handler
+        var form = document.getElementById('contact-form');
+        if (form) {
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData);
+                
+                try {
+                    const response = await fetch(WEBHOOK_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    if (response.ok) {
+                        alert('Daten wurden erfolgreich gespeichert!');
+                        form.reset();
+                    } else {
+                        throw new Error('Netzwerk-Antwort war nicht ok');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Fehler beim Speichern der Daten. Bitte versuchen Sie es erneut.');
+                }
+            });
+        }
     }
 
-    // Restlicher Code bleibt unverändert
+    function loadDependencies() {
+        var papaScript = document.createElement('script');
+        papaScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js';
+        papaScript.onload = function() {
+            var calendlyScript = document.createElement('script');
+            calendlyScript.src = 'https://assets.calendly.com/assets/external/widget.js';
+            calendlyScript.async = true;
+            calendlyScript.onload = init;
+            document.head.appendChild(calendlyScript);
+        };
+        document.head.appendChild(papaScript);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadDependencies);
+    } else {
+        loadDependencies();
+    }
 })();
