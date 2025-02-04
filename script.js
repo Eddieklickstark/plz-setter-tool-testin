@@ -12,19 +12,26 @@
             '.setter-tool { max-width: 800px; margin: 0 auto; padding: 20px; font-family: figtree, sans-serif; }',
             '.section { margin-bottom: 40px; background: white; padding: 24px; border-radius: 12px; }',
             
-            // Bundesland Input Styles
+            // Headers
+            '.section-header { font-size: 24px; color: #111827; margin-bottom: 24px; font-weight: 600; padding-bottom: 8px; border-bottom: 1px solid #E5E7EB; }',
+            '.subsection-header { font-size: 18px; color: #374151; margin: 16px 0; font-weight: 500; }',
+            
+            // Bundesland Styles
             '.bundesland-section { margin-bottom: 24px; }',
-            '.bundesland-input-container { position: relative; }',
+            '.bundesland-input-container { position: relative; margin-bottom: 20px; }',
             '#bundesland-input { width: 100%; padding: 16px; font-size: 16px; border: 1px solid #E5E7EB; border-radius: 10px; }',
             '#bundesland-input:focus { outline: none; border-color: #046C4E; box-shadow: 0 0 0 3px rgba(4, 108, 78, 0.1); }',
             '.bundesland-dropdown { position: absolute; width: 100%; max-height: 300px; overflow-y: auto; background: white; border: 1px solid #E5E7EB; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 1000; display: none; }',
             '.bundesland-option { padding: 12px 16px; cursor: pointer; }',
             '.bundesland-option:hover { background: #F3F4F6; }',
             
+            // Calendly Container
+            '.calendly-placeholder { background: #F9FAFB; border: 2px dashed #E5E7EB; border-radius: 12px; padding: 40px; text-align: center; color: #6B7280; min-height: 400px; display: flex; align-items: center; justify-content: center; margin: 20px 0; }',
+            '#calendly-container { margin: 20px 0; border-radius: 12px; overflow: hidden; background: white; min-height: 400px; }',
+            
             // Form Styles
-            '.form-section { margin-top: 32px; }',
-            '.section-header { font-size: 24px; color: #111827; margin-bottom: 24px; font-weight: 600; padding-bottom: 8px; border-bottom: 1px solid #E5E7EB; }',
-            '.form-group { margin-bottom: 24px; }',
+            '.form-section { margin-top: 40px; }',
+            '.form-group { margin-bottom: 32px; }',
             '.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }',
             '@media (max-width: 640px) { .form-grid { grid-template-columns: 1fr; } }',
             
@@ -38,19 +45,29 @@
             '.ios-submit { background: #046C4E; color: white; padding: 16px 32px; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; width: 100%; margin-top: 24px; transition: all 0.3s ease; }',
             '.ios-submit:hover { background: #065F46; }',
             
-            // Calendly Container
-            '#calendly-container { margin: 24px 0; border-radius: 12px; overflow: hidden; }'
+            // Info Box
+            '.ae-info { background: #f7fafc; border: 1px solid #E5E7EB; border-radius: 8px; padding: 20px; margin-bottom: 20px; }'
         ].join('\n');
         document.head.appendChild(css);
     }
 
-    function createFormStructure() {
+    function createStructure() {
+        var container = document.querySelector('.setter-tool');
+        if (!container) return;
+
+        // Füge Calendly-Platzhalter hinzu
+        var calendlyDiv = document.getElementById('calendly-container');
+        if (calendlyDiv) {
+            calendlyDiv.innerHTML = '<div class="calendly-placeholder">Bitte wählen Sie zuerst ein Bundesland aus, um den Kalender zu laden.</div>';
+        }
+
+        // Füge Formular hinzu
         var formHtml = `
             <form id="contact-form" class="form-section">
                 <h2 class="section-header">Kontaktinformationen</h2>
                 
                 <div class="form-group">
-                    <h3 class="section-header">Flächeninformationen</h3>
+                    <h3 class="subsection-header">Flächeninformationen</h3>
                     <div class="form-grid">
                         <select class="ios-input required" name="flaechenart" required>
                             <option value="">Flächenart wählen*</option>
@@ -75,7 +92,7 @@
                 </div>
 
                 <div class="form-group">
-                    <h3 class="section-header">Standortinformationen</h3>
+                    <h3 class="subsection-header">Standortinformationen</h3>
                     <div class="form-grid">
                         <input type="text" class="ios-input required" name="strasse" placeholder="Standort Straße*" required>
                         <input type="text" class="ios-input required" name="hausnummer" placeholder="Standort Hausnummer*" required>
@@ -85,7 +102,7 @@
                 </div>
 
                 <div class="form-group">
-                    <h3 class="section-header">Unternehmensinformationen</h3>
+                    <h3 class="subsection-header">Unternehmensinformationen</h3>
                     <div class="form-grid">
                         <input type="text" class="ios-input required" name="firma" placeholder="Firma*" required>
                         <select class="ios-input required" name="branche" required>
@@ -97,7 +114,7 @@
                 </div>
 
                 <div class="form-group">
-                    <h3 class="section-header">Kontaktperson</h3>
+                    <h3 class="subsection-header">Kontaktperson</h3>
                     <div class="form-grid">
                         <select class="ios-input required" name="anrede" required>
                             <option value="">Anrede wählen*</option>
@@ -117,7 +134,7 @@
                 </div>
 
                 <div class="form-group">
-                    <h3 class="section-header">Gesprächsnotiz</h3>
+                    <h3 class="subsection-header">Gesprächsnotiz</h3>
                     <textarea class="ios-input ios-textarea required" name="gespraechsnotiz" 
                         placeholder="Gesprächsnotiz - Bitte ausführlich den Verlauf des Telefonats protokollieren (mind. 3 Sätze/Zeilen). Jede zusätzliche Information hilft unseren Kollegen im Termin.*" required></textarea>
                 </div>
@@ -126,47 +143,159 @@
             </form>
         `;
 
-        var formContainer = document.createElement('div');
-        formContainer.innerHTML = formHtml;
-        document.querySelector('.setter-tool').appendChild(formContainer);
+        container.insertAdjacentHTML('beforeend', formHtml);
     }
 
-    // ... [Bestehende Funktionen für Bundesland und Calendly bleiben gleich] ...
+    function loadAEData() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', SHEET_URL, true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                Papa.parse(xhr.responseText, {
+                    header: true,
+                    skipEmptyLines: true,
+                    complete: function(results) {
+                        aeMapping = {};
+                        bundeslaender = [];
+                        results.data.forEach(function(row) {
+                            if (row.Bundesland && row.name) {
+                                aeMapping[row.Bundesland.trim()] = {
+                                    name: row.name.trim(),
+                                    calendlyLink: row.calendly_link ? row.calendly_link.trim() : ''
+                                };
+                                bundeslaender.push(row.Bundesland.trim());
+                            }
+                        });
+                    }
+                });
+            }
+        };
+        xhr.send();
+    }
+
+    function updateDropdown(searchTerm) {
+        var dropdown = document.querySelector('.bundesland-dropdown');
+        var filteredBundeslaender = bundeslaender.filter(function(bundesland) {
+            return bundesland.toLowerCase().includes(searchTerm.toLowerCase());
+        });
+
+        if (filteredBundeslaender.length > 0 && searchTerm) {
+            dropdown.style.display = 'block';
+            dropdown.innerHTML = filteredBundeslaender.map(function(bundesland) {
+                return '<div class="bundesland-option">' + bundesland + '</div>';
+            }).join('');
+        } else {
+            dropdown.style.display = 'none';
+        }
+    }
+
+    function updateUI(ae, bundesland) {
+        var resultDiv = document.getElementById('ae-result');
+        var calendlyDiv = document.getElementById('calendly-container');
+        
+        if (!resultDiv || !calendlyDiv) return;
+        
+        if (ae) {
+            resultDiv.innerHTML = '<div class="ae-info">' +
+                '<h3 class="ae-title">Zuständiger Closer für ' + bundesland + ':</h3>' +
+                '<div class="ae-details"><p><strong>Name:</strong> ' + ae.name + '</p></div>' +
+                '</div>';
+            
+            if (ae.calendlyLink) {
+                calendlyDiv.innerHTML = '<div class="calendly-inline-widget" ' +
+                    'data-url="' + ae.calendlyLink + '?hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1&background_color=ffffff&hide_title=1" ' +
+                    'style="min-width:320px;height:700px;">' +
+                    '</div>';
+                
+                if (window.Calendly) {
+                    window.Calendly.initInlineWidget({
+                        url: ae.calendlyLink + '?hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1&background_color=ffffff&hide_title=1',
+                        parentElement: calendlyDiv.querySelector('.calendly-inline-widget')
+                    });
+                }
+            }
+        }
+    }
 
     function init() {
         addStyles();
+        createStructure();
         loadAEData();
-        createFormStructure();
         
-        // Event Listener für das Formular
-        document.getElementById('contact-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
+        var input = document.getElementById('bundesland-input');
+        var dropdown = document.querySelector('.bundesland-dropdown');
+        
+        if (input && dropdown) {
+            input.addEventListener('input', function() {
+                updateDropdown(this.value);
+            });
             
-            const formData = new FormData(e.target);
-            const data = Object.fromEntries(formData);
-            
-            try {
-                const response = await fetch(WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data)
-                });
-                
-                if (response.ok) {
-                    alert('Daten wurden erfolgreich gespeichert!');
-                } else {
-                    throw new Error('Netzwerk-Antwort war nicht ok');
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('bundesland-option')) {
+                    var selectedBundesland = e.target.textContent;
+                    input.value = selectedBundesland;
+                    dropdown.style.display = 'none';
+                    updateUI(aeMapping[selectedBundesland], selectedBundesland);
+                } else if (!e.target.classList.contains('bundesland-input')) {
+                    dropdown.style.display = 'none';
                 }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Fehler beim Speichern der Daten. Bitte versuchen Sie es erneut.');
-            }
-        });
-        
-        // ... [Rest der Initialisierung bleibt gleich] ...
+            });
+            
+            input.addEventListener('focus', function() {
+                if (this.value) {
+                    updateDropdown(this.value);
+                }
+            });
+        }
+
+        // Formular-Handler
+        var form = document.getElementById('contact-form');
+        if (form) {
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData);
+                
+                try {
+                    const response = await fetch(WEBHOOK_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    if (response.ok) {
+                        alert('Daten wurden erfolgreich gespeichert!');
+                    } else {
+                        throw new Error('Netzwerk-Antwort war nicht ok');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Fehler beim Speichern der Daten. Bitte versuchen Sie es erneut.');
+                }
+            });
+        }
     }
 
-    // ... [Rest des Codes bleibt gleich] ...
+    function loadDependencies() {
+        var papaScript = document.createElement('script');
+        papaScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js';
+        papaScript.onload = function() {
+            var calendlyScript = document.createElement('script');
+            calendlyScript.src = 'https://assets.calendly.com/assets/external/widget.js';
+            calendlyScript.async = true;
+            calendlyScript.onload = init;
+            document.head.appendChild(calendlyScript);
+        };
+        document.head.appendChild(papaScript);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadDependencies);
+    } else {
+        loadDependencies();
+    }
 })();
+                                                 
