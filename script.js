@@ -231,7 +231,7 @@
         if (!resultDiv || !calendlyDiv) return;
         if (ae) {
             resultDiv.innerHTML = '<div class="ae-info">' +
-                '<h3 class="ae-title">Zuständiger Account Executive für ' + bundesland + ':</h3>' +
+                '<h2 class="ae-title">Zuständiger Account Executive für ' + bundesland + ':</h2>' +
                 '<div class="ae-details"><p><strong>Name:</strong> ' + ae.name + '</p></div>' +
                 '</div>';
             if (ae.calendlyLink) {
