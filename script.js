@@ -40,7 +40,7 @@
         var html = `
             <div class="bundesland-section">
                 <h2 class="section-header">Terminbuchung</h2>
-                <h3 class="subsection-header">Unternehmensinformationen</h3>
+                <h3 class="subsection-header">Bundesland</h3>
                 <div class="bundesland-input-container">
                     <select id="bundesland-select" class="ios-input required">
                         <option value="">Bundesland wählen...</option>
