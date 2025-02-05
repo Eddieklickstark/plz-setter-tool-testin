@@ -278,7 +278,19 @@
                         body: JSON.stringify(data)
                     });
                     if (response.ok) {
-                        alert('Daten wurden erfolgreich gespeichert!');
+                        // Entferne eventuelle bestehende Erfolgsmeldung
+                        var existingMsg = document.querySelector('.success-message');
+                        if (existingMsg) {
+                            existingMsg.remove();
+                        }
+                        // Erstelle eine Erfolgsmeldung unterhalb des Formulars
+                        var successMessage = document.createElement('div');
+                        successMessage.className = 'success-message';
+                        successMessage.style.marginTop = '20px';
+                        successMessage.style.fontSize = '18px';
+                        successMessage.style.color = 'green';
+                        successMessage.textContent = 'Daten wurden erfolgreich gespeichert!';
+                        form.parentNode.insertBefore(successMessage, form.nextSibling);
                         form.reset();
                     } else {
                         throw new Error('Netzwerk-Antwort war nicht ok');
