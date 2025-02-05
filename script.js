@@ -232,8 +232,8 @@
         if (!resultDiv || !calendlyDiv) return;
         if (ae) {
             resultDiv.innerHTML = '<div class="ae-info">' +
-                '<div class="ae-title"><p>Zuständiger Account Executive für ' + bundesland + '</p></div>' +
-                '<div class="ae-details"><p><strong>Name:</strong> ' + ae.name + '</p></div>' +
+                '<div class="ae-title"><p>Zuständiger Account Executive für ' + bundesland + ':</p></div>' +
+                '<div class="ae-details"><p> ' + ae.name + '</p></div>' +
                 '</div>';
             if (ae.calendlyLink) {
                 calendlyDiv.innerHTML = '<div class="calendly-inline-widget" ' +
