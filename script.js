@@ -4,7 +4,7 @@
     var aeMapping = {};
     var bundeslaender = [];
 
-    // Fügt CSS-Styles hinzu
+    // Fügt CSS-Styles hinzu, hier wurde der Container angepasst (2rem Padding, 2rem abgerundete Ecken)
     function addStyles() {
         var css = document.createElement('style');
         css.type = 'text/css';
@@ -284,14 +284,20 @@
                         if (existingMsg) {
                             existingMsg.remove();
                         }
-                        // Erstelle eine Erfolgsmeldung unterhalb des Formulars
+                        // Erstelle eine Erfolgsmeldung direkt unter dem Formular mit weniger Whitespace
                         var successMessage = document.createElement('div');
                         successMessage.className = 'success-message';
-                        successMessage.style.marginTop = '20px';
-                        successMessage.style.fontSize = '18px';
+                        successMessage.style.marginTop = '10px';
+                        successMessage.style.fontSize = '16px';
                         successMessage.style.color = 'green';
                         successMessage.textContent = 'Daten wurden erfolgreich gespeichert!';
                         form.parentNode.insertBefore(successMessage, form.nextSibling);
+                        // Entferne die Erfolgsmeldung nach 3 Sekunden
+                        setTimeout(function() {
+                            if (successMessage && successMessage.parentNode) {
+                                successMessage.parentNode.removeChild(successMessage);
+                            }
+                        }, 3000);
                         form.reset();
                     } else {
                         throw new Error('Netzwerk-Antwort war nicht ok');
