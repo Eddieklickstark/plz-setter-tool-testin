@@ -39,8 +39,8 @@
         if (!container) return;
         var html = `
             <div class="bundesland-section">
-                <h2 class="section-header">Terminbuchung</h2>
-                <h3 class="subsection-header">Schritt 1 - Calendly Termin buchen</h3>
+                <h2 class="section-header">Schritt 1: Terminbuchung</h2>
+                <h3 class="subsection-header">Bundesland</h3>
                 <div class="bundesland-input-container">
                     <select id="bundesland-select" class="ios-input required">
                         <option value="">Bundesland wählen...</option>
@@ -51,9 +51,8 @@
             <div id="calendly-container">
                 <div class="calendly-placeholder">Bitte wählen Sie zuerst ein Bundesland aus, um den Kalender zu laden.</div>
             </div>
-            <h3 class="subsection-header">Schritt 2 - Daten eintragen</h3>
             <form id="contact-form" class="form-section">
-                <h2 class="section-header">Kontaktinformationen</h2>
+                <h2 class="section-header">Schritt 2: Kontaktinformationen</h2>
                 <!-- Unsichtbares Feld für Bundesland -->
                 <input type="hidden" id="bundesland-hidden" name="bundesland" value="">
                 <div class="form-group">
