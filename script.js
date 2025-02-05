@@ -9,7 +9,7 @@
         var css = document.createElement('style');
         css.type = 'text/css';
         css.innerHTML = [
-            '.setter-tool { max-width: 800px; margin: 0 auto; padding: 20px; font-family: figtree, sans-serif; }',
+            '.setter-tool { max-width: 800px; margin: 0 auto; padding: 2rem; border-radius: 2rem; font-family: figtree, sans-serif; }',
             '.section-header { font-size: 22px; color: #111827; margin-bottom: 16px; font-weight: 600; padding-bottom: 8px; border-bottom: 1px solid #E5E7EB; }',
             '.subsection-header { font-size: 18px; color: #374151; margin: 16px 0; font-weight: 500; }',
             '.bundesland-section { margin-bottom: 40px; }',
@@ -32,15 +32,15 @@
 
     // Baut die HTML-Struktur auf:
     // 1. Oben: Bundesland-Dropdown und AE-Info
-    // 2. Calendly-Bereich
-    // 3. Das Kontaktformular mit den statischen Optionen und dem unsichtbaren Bundesland-Feld
+    // 2. Anschließend der Calendly-Bereich (Schritt 1)
+    // 3. Anschließend das Formular (Schritt 2) mit den statischen Optionen und dem unsichtbaren Bundesland-Feld
     function createStructure() {
         var container = document.querySelector('.setter-tool');
         if (!container) return;
         var html = `
             <div class="bundesland-section">
                 <h2 class="section-header">Terminbuchung</h2>
-                <h3 class="subsection-header">Bundesland</h3>
+                <h3 class="subsection-header">Schritt 1 - Calendly Termin buchen</h3>
                 <div class="bundesland-input-container">
                     <select id="bundesland-select" class="ios-input required">
                         <option value="">Bundesland wählen...</option>
@@ -51,6 +51,7 @@
             <div id="calendly-container">
                 <div class="calendly-placeholder">Bitte wählen Sie zuerst ein Bundesland aus, um den Kalender zu laden.</div>
             </div>
+            <h3 class="subsection-header">Schritt 2 - Daten eintragen</h3>
             <form id="contact-form" class="form-section">
                 <h2 class="section-header">Kontaktinformationen</h2>
                 <!-- Unsichtbares Feld für Bundesland -->
