@@ -39,7 +39,8 @@
         if (!container) return;
         var html = `
             <div class="bundesland-section">
-                <h2 class="section-header">Bundesland Auswahl</h2>
+                <h2 class="section-header">Terminbuchung</h2>
+                <h3 class="subsection-header">Unternehmensinformationen</h3>
                 <div class="bundesland-input-container">
                     <select id="bundesland-select" class="ios-input required">
                         <option value="">Bundesland wählen...</option>
@@ -175,7 +176,7 @@
                     <textarea class="ios-input ios-textarea required" name="gespraechsnotiz" 
                         placeholder="Gesprächsnotiz - Bitte ausführlich den Verlauf des Telefonats protokollieren (mind. 3 Sätze/Zeilen). Jede zusätzliche Information hilft unseren Kollegen im Termin.*" required></textarea>
                 </div>
-                <button type="submit" class="ios-submit">Daten speichern</button>
+                <button type="submit" class="ios-submit">Informationen senden</button>
             </form>
         `;
         container.innerHTML = html;
