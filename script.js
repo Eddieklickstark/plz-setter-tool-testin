@@ -4,7 +4,7 @@
     var aeMapping = {};
     var bundeslaender = [];
 
-    // Fügt CSS-Styles hinzu, hier wurde der Container angepasst (2rem Padding, 2rem abgerundete Ecken)
+    // Fügt CSS-Styles hinzu, inklusive 2rem Padding und 2rem border-radius für den Container
     function addStyles() {
         var css = document.createElement('style');
         css.type = 'text/css';
@@ -25,7 +25,8 @@
             '.ios-textarea { min-height: 120px; resize: vertical; width: 100%; }',
             '.ios-submit { background: #046C4E; color: white; padding: 16px 32px; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; width: 100%; margin-top: 24px; transition: all 0.3s ease; }',
             '.ios-submit:hover { background: #065F46; }',
-            '.ae-info { background: #f7fafc; border: 1px solid #E5E7EB; border-radius: 8px; padding: 20px; font-size: 18px; }'
+            '.ae-info { background: #f7fafc; border: 1px solid #E5E7EB; border-radius: 8px; padding: 20px; font-size: 18px; }',
+            '.success-message { margin: 1rem 0; padding: 1rem; background-color: #28a745; color: #fff; font-size: 20px; text-align: center; border-radius: 0.5rem; }'
         ].join('\n');
         document.head.appendChild(css);
     }
@@ -39,8 +40,8 @@
         if (!container) return;
         var html = `
             <div class="bundesland-section">
-                <h2 class="section-header">Schritt 1: Terminbuchung</h2>
-                <h3 class="subsection-header">Bundesland</h3>
+                <h2 class="section-header">Terminbuchung</h2>
+                <h3 class="subsection-header">Schritt 1 - Calendly Termin buchen</h3>
                 <div class="bundesland-input-container">
                     <select id="bundesland-select" class="ios-input required">
                         <option value="">Bundesland wählen...</option>
@@ -51,8 +52,9 @@
             <div id="calendly-container">
                 <div class="calendly-placeholder">Bitte wählen Sie zuerst ein Bundesland aus, um den Kalender zu laden.</div>
             </div>
+            <h3 class="subsection-header">Schritt 2 - Daten eintragen</h3>
             <form id="contact-form" class="form-section">
-                <h2 class="section-header">Schritt 2: Kontaktinformationen</h2>
+                <h2 class="section-header">Kontaktinformationen</h2>
                 <!-- Unsichtbares Feld für Bundesland -->
                 <input type="hidden" id="bundesland-hidden" name="bundesland" value="">
                 <div class="form-group">
@@ -66,17 +68,17 @@
                         
                         <select class="ios-input required" name="flaechengroesse" required>
                             <option value="">Flächengröße wählen*</option>
-                            <option value="Weniger als 2.000 Quadratmeter">Weniger als 2.000 Quadratmeter</option>
-                            <option value="2.000 bis 4.000 Quadratmeter">2.000 bis 4.000 Quadratmeter</option>
-                            <option value="Mehr als 4.000 Quadratmeter">Mehr als 4.000 Quadratmeter</option>
+                            <option value="Weniger als 2.000qm">Weniger als 2.000qm</option>
+                            <option value="2.000 bis 4.000qm">2.000 bis 4.000qm</option>
+                            <option value="Mehr als 4.000qm">Mehr als 4.000qm</option>
                         </select>
                         
                         <select class="ios-input required" name="stromverbrauch" required>
                             <option value="">Stromverbrauch wählen*</option>
-                            <option value="Unter 100.000 kWh">Unter 100.000 kWh</option>
-                            <option value="100.000 bis 500.000 kWh">100.000 bis 500.000 kWh</option>
-                            <option value="500.000 bis 1.000.000 kWh">500.000 bis 1.000.000 kWh</option>
-                            <option value="Über 1.000.000 kWh">Über 1.000.000 kWh</option>
+                            <option value="unter 100.000 kWh">unter 100.000 kWh</option>
+                            <option value="100.000 - 500.000 kWh">100.000 - 500.000 kWh</option>
+                            <option value="500.000 - 1 Mio kWh">500.000 - 1 Mio kWh</option>
+                            <option value="über 1 Mio kWh">über 1 Mio kWh</option>
                         </select>
                         <input type="number" class="ios-input required" name="standorte" placeholder="Anzahl der Standorte*" required>
                     </div>
@@ -231,8 +233,8 @@
         if (!resultDiv || !calendlyDiv) return;
         if (ae) {
             resultDiv.innerHTML = '<div class="ae-info">' +
-                '<div class="ae-title"><p>Zuständiger Account Executive für ' + bundesland + ':</p></div>' +
-                '<div class="ae-details"><p> ' + ae.name + '</p></div>' +
+                '<div class="ae-title"><p>Zuständiger Account Executive für ' + bundesland + '</p></div>' +
+                '<div class="ae-details"><p><strong>Name:</strong> ' + ae.name + '</p></div>' +
                 '</div>';
             if (ae.calendlyLink) {
                 calendlyDiv.innerHTML = '<div class="calendly-inline-widget" ' +
@@ -283,20 +285,22 @@
                         if (existingMsg) {
                             existingMsg.remove();
                         }
-                        // Erstelle eine Erfolgsmeldung direkt unter dem Formular mit weniger Whitespace
+                        // Erstelle eine prominente Erfolgsmeldung als Overlay
                         var successMessage = document.createElement('div');
                         successMessage.className = 'success-message';
-                        successMessage.style.marginTop = '10px';
-                        successMessage.style.fontSize = '16px';
-                        successMessage.style.color = 'green';
+                        successMessage.style.position = 'fixed';
+                        successMessage.style.top = '20px';
+                        successMessage.style.left = '50%';
+                        successMessage.style.transform = 'translateX(-50%)';
+                        successMessage.style.zIndex = '1000';
                         successMessage.textContent = 'Daten wurden erfolgreich gespeichert!';
-                        form.parentNode.insertBefore(successMessage, form.nextSibling);
-                        // Entferne die Erfolgsmeldung nach 3 Sekunden
+                        document.body.appendChild(successMessage);
+                        // Lasse die Nachricht 5 Sekunden sichtbar bleiben, bevor sie automatisch entfernt wird
                         setTimeout(function() {
                             if (successMessage && successMessage.parentNode) {
                                 successMessage.parentNode.removeChild(successMessage);
                             }
-                        }, 3000);
+                        }, 5000);
                         form.reset();
                     } else {
                         throw new Error('Netzwerk-Antwort war nicht ok');
