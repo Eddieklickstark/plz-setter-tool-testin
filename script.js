@@ -4,7 +4,6 @@
     var aeMapping = {};
     var bundeslaender = [];
 
-    // Fügt CSS-Styles hinzu, inklusive 2rem Padding und 2rem border-radius für den Container
     function addStyles() {
         var css = document.createElement('style');
         css.type = 'text/css';
@@ -26,15 +25,12 @@
             '.ios-submit { background: #046C4E; color: white; padding: 16px 32px; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; width: 100%; margin-top: 24px; transition: all 0.3s ease; }',
             '.ios-submit:hover { background: #065F46; }',
             '.ae-info { background: #f7fafc; border: 1px solid #E5E7EB; border-radius: 8px; padding: 20px; font-size: 18px; }',
-            '.success-message { margin: 1rem 0; padding: 1rem; background-color: #28a745; color: #fff; font-size: 20px; text-align: center; border-radius: 0.5rem; }'
+            '.success-message { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #28a745; color: #fff; font-size: 20px; text-align: center; border-radius: 12px; padding: 30px; z-index: 9999999; animation: fadeInOut 3s ease-in-out forwards; }',
+            '@keyframes fadeInOut { 0% { opacity: 0; transform: translate(-50%, -60%); } 10% { opacity: 1; transform: translate(-50%, -50%); } 90% { opacity: 1; transform: translate(-50%, -50%); } 100% { opacity: 0; transform: translate(-50%, -60%); } }'
         ].join('\n');
         document.head.appendChild(css);
     }
 
-    // Baut die HTML-Struktur auf:
-    // 1. Oben: Bundesland-Dropdown und AE-Info
-    // 2. Anschließend der Calendly-Bereich (Schritt 1)
-    // 3. Anschließend das Formular (Schritt 2) mit den statischen Optionen und dem unsichtbaren Bundesland-Feld
     function createStructure() {
         var container = document.querySelector('.setter-tool');
         if (!container) return;
@@ -55,7 +51,6 @@
             <h3 class="subsection-header">Schritt 2 - Daten eintragen</h3>
             <form id="contact-form" class="form-section">
                 <h2 class="section-header">Kontaktinformationen</h2>
-                <!-- Unsichtbares Feld für Bundesland -->
                 <input type="hidden" id="bundesland-hidden" name="bundesland" value="">
                 <div class="form-group">
                     <h3 class="subsection-header">Flächeninformationen</h3>
@@ -174,160 +169,141 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <h3 class="subsection-header">Gesprächsnotiz*</h3>
-                    <textarea class="ios-input ios-textarea required" name="gespraechsnotiz" 
-                        placeholder="Gesprächsnotiz - Bitte ausführlich den Verlauf des Telefonats protokollieren (mind. 3 Sätze/Zeilen). Jede zusätzliche Information hilft unseren Kollegen im Termin.*" required></textarea>
-                </div>
-                <button type="submit" class="ios-submit">Informationen senden</button>
-            </form>`;
-        container.innerHTML = html;
-    }
+                   <h3 class="subsection-header">Gesprächsnotiz*</h3>
+                   <textarea class="ios-input ios-textarea required" name="gespraechsnotiz" 
+                       placeholder="Gesprächsnotiz - Bitte ausführlich den Verlauf des Telefonats protokollieren (mind. 3 Sätze/Zeilen). Jede zusätzliche Information hilft unseren Kollegen im Termin.*" required></textarea>
+               </div>
+               <button type="submit" class="ios-submit">Informationen senden</button>
+           </form>`;
+       container.innerHTML = html;
+   }
 
-    // Füllt das Bundesland-Dropdown mit den Werten aus der Spalte "Bundesland" des Google Sheets
-    function updateBundeslandSelect() {
-        var select = document.getElementById('bundesland-select');
-        if (!select) return;
-        select.innerHTML = '<option value="">Bundesland wählen...</option>';
-        bundeslaender.forEach(function(bundesland) {
-            select.innerHTML += '<option value="' + bundesland + '">' + bundesland + '</option>';
-        });
-    }
+   function updateBundeslandSelect() {
+       var select = document.getElementById('bundesland-select');
+       if (!select) return;
+       select.innerHTML = '<option value="">Bundesland wählen...</option>';
+       bundeslaender.forEach(function(bundesland) {
+           select.innerHTML += '<option value="' + bundesland + '">' + bundesland + '</option>';
+       });
+   }
 
-    // Lädt die Daten aus dem Google Sheet, erstellt die Zuordnung Bundesland -> Account Executive und füllt das Dropdown
-    function loadAEData() {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', SHEET_URL, true);
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                Papa.parse(xhr.responseText, {
-                    header: true,
-                    skipEmptyLines: true,
-                    complete: function(results) {
-                        aeMapping = {};
-                        bundeslaender = [];
-                        results.data.forEach(function(row) {
-                            if (row.Bundesland && row.name) {
-                                var bl = row.Bundesland.trim();
-                                aeMapping[bl] = {
-                                    name: row.name.trim(),
-                                    calendlyLink: row.calendly_link ? row.calendly_link.trim() : ''
-                                };
-                                if (bundeslaender.indexOf(bl) === -1) {
-                                    bundeslaender.push(bl);
-                                }
-                            }
-                        });
-                        updateBundeslandSelect();
-                    }
-                });
-            }
-        };
-        xhr.send();
-    }
+   function loadAEData() {
+       var xhr = new XMLHttpRequest();
+       xhr.open('GET', SHEET_URL, true);
+       xhr.onreadystatechange = function() {
+           if (xhr.readyState === 4 && xhr.status === 200) {
+               Papa.parse(xhr.responseText, {
+                   header: true,
+                   skipEmptyLines: true,
+                   complete: function(results) {
+                       aeMapping = {};
+                       bundeslaender = [];
+                       results.data.forEach(function(row) {
+                           if (row.Bundesland && row.name) {
+                               var bl = row.Bundesland.trim();
+                               aeMapping[bl] = {
+                                   name: row.name.trim(),
+                                   calendlyLink: row.calendly_link ? row.calendly_link.trim() : ''
+                               };
+                               if (bundeslaender.indexOf(bl) === -1) {
+                                   bundeslaender.push(bl);
+                               }
+                           }
+                       });
+                       updateBundeslandSelect();
+                   }
+               });
+           }
+       };
+       xhr.send();
+   }
 
-    // Aktualisiert den Bereich mit der Account Executive-Info und lädt den entsprechenden Calendly-Widget
-    function updateUI(ae, bundesland) {
-        var resultDiv = document.getElementById('ae-result');
-        var calendlyDiv = document.getElementById('calendly-container');
-        if (!resultDiv || !calendlyDiv) return;
-        if (ae) {
-            resultDiv.innerHTML = '<div class="ae-info">' +
-                '<div class="ae-title"><p>Zuständiger Account Executive für ' + bundesland + '</p></div>' +
-                '<div class="ae-details"><p><strong>Name:</strong> ' + ae.name + '</p></div>' +
-                '</div>';
-            if (ae.calendlyLink) {
-                calendlyDiv.innerHTML = '<div class="calendly-inline-widget" ' +
-                    'data-url="' + ae.calendlyLink + '?hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1&background_color=ffffff&hide_title=1" ' +
-                    'style="min-width:320px;height:700px;">' +
-                    '</div>';
-                if (window.Calendly) {
-                    window.Calendly.initInlineWidget({
-                        url: ae.calendlyLink + '?hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1&background_color=ffffff&hide_title=1',
-                        parentElement: calendlyDiv.querySelector('.calendly-inline-widget')
-                    });
-                }
-            }
-        }
-    }
+   function updateUI(ae, bundesland) {
+       var resultDiv = document.getElementById('ae-result');
+       var calendlyDiv = document.getElementById('calendly-container');
+       if (!resultDiv || !calendlyDiv) return;
+       if (ae) {
+           resultDiv.innerHTML = '<div class="ae-info">' +
+               '<div class="ae-title"><p>Zuständiger Account Executive für ' + bundesland + '</p></div>' +
+               '<div class="ae-details"><p><strong>Name:</strong> ' + ae.name + '</p></div>' +
+               '</div>';
+           if (ae.calendlyLink) {
+               calendlyDiv.innerHTML = '<div class="calendly-inline-widget" ' +
+                   'data-url="' + ae.calendlyLink + '?hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1&background_color=ffffff&hide_title=1" ' +
+                   'style="min-width:320px;height:700px;">' +
+                   '</div>';
+               if (window.Calendly) {
+                   window.Calendly.initInlineWidget({
+                       url: ae.calendlyLink + '?hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1&background_color=ffffff&hide_title=1',
+                       parentElement: calendlyDiv.querySelector('.calendly-inline-widget')
+                   });
+               }
+           }
+       }
+   }
 
-    // Initialisiert das Script: Fügt Styles hinzu, baut die Struktur auf, lädt die Daten und setzt die Event-Listener
-    function init() {
-        addStyles();
-        createStructure();
-        loadAEData();
-        var bundeslandSelect = document.getElementById('bundesland-select');
-        if (bundeslandSelect) {
-            bundeslandSelect.addEventListener('change', function() {
-                var selectedBundesland = this.value;
-                // Aktualisiere auch das unsichtbare Feld im Formular
-                document.getElementById('bundesland-hidden').value = selectedBundesland;
-                if (selectedBundesland) {
-                    updateUI(aeMapping[selectedBundesland], selectedBundesland);
-                }
-            });
-        }
-        var form = document.getElementById('contact-form');
-        if (form) {
-            form.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                const formData = new FormData(e.target);
-                const data = Object.fromEntries(formData);
-                try {
-                    const response = await fetch(WEBHOOK_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(data)
-                    });
-                    if (response.ok) {
-                        // Entferne eventuelle bestehende Erfolgsmeldung
-                        var existingMsg = document.querySelector('.success-message');
-                        if (existingMsg) {
-                            existingMsg.remove();
-                        }
-                        // Erstelle eine prominente Erfolgsmeldung als Overlay
-                        var successMessage = document.createElement('div');
-                        successMessage.className = 'success-message';
-                        successMessage.style.position = 'fixed';
-                        successMessage.style.top = '20px';
-                        successMessage.style.left = '50%';
-                        successMessage.style.transform = 'translateX(-50%)';
-                        successMessage.style.zIndex = '9999999'; // <--- Hier angehoben
-                        successMessage.textContent = 'Daten wurden erfolgreich gespeichert!';
-                        document.body.appendChild(successMessage);
-                        // Lasse die Nachricht 5 Sekunden sichtbar bleiben, bevor sie automatisch entfernt wird
-                        setTimeout(function() {
-                            if (successMessage && successMessage.parentNode) {
-                                successMessage.parentNode.removeChild(successMessage);
-                            }
-                        }, 5000);
-                        form.reset();
-                    } else {
-                        throw new Error('Netzwerk-Antwort war nicht ok');
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert('Fehler beim Speichern der Daten. Bitte versuchen Sie es erneut.');
-                }
-            });
-        }
-    }
+   function init() {
+       addStyles();
+       createStructure();
+       loadAEData();
+       var bundeslandSelect = document.getElementById('bundesland-select');
+       if (bundeslandSelect) {
+           bundeslandSelect.addEventListener('change', function() {
+               var selectedBundesland = this.value;
+               document.getElementById('bundesland-hidden').value = selectedBundesland;
+               if (selectedBundesland) {
+                   updateUI(aeMapping[selectedBundesland], selectedBundesland);
+               }
+           });
+       }
+       var form = document.getElementById('contact-form');
+       if (form) {
+           form.addEventListener('submit', async function(e) {
+               e.preventDefault();
+               const formData = new FormData(e.target);
+               const data = Object.fromEntries(formData);
+               try {
+                   const response = await fetch(WEBHOOK_URL, {
+                       method: 'POST',
+                       headers: { 'Content-Type': 'application/json' },
+                       body: JSON.stringify(data)
+                   });
+                   if (response.ok) {
+                       var successMessage = document.createElement('div');
+                       successMessage.className = 'success-message';
+                       successMessage.textContent = 'Daten wurden erfolgreich gespeichert!';
+                       document.body.appendChild(successMessage);
+                       
+                       setTimeout(function() {
+                           window.location.reload();
+                       }, 3000);
+                   } else {
+                       throw new Error('Netzwerk-Antwort war nicht ok');
+                   }
+               } catch (error) {
+                   console.error('Error:', error);
+                   alert('Fehler beim Speichern der Daten. Bitte versuchen Sie es erneut.');
+               }
+           });
+       }
+   }
 
-    function loadDependencies() {
-        var papaScript = document.createElement('script');
-        papaScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js';
-        papaScript.onload = function() {
-            var calendlyScript = document.createElement('script');
-            calendlyScript.src = 'https://assets.calendly.com/assets/external/widget.js';
-            calendlyScript.async = true;
-            calendlyScript.onload = init;
-            document.head.appendChild(calendlyScript);
-        };
-        document.head.appendChild(papaScript);
-    }
+   function loadDependencies() {
+       var papaScript = document.createElement('script');
+       papaScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js';
+       papaScript.onload = function() {
+           var calendlyScript = document.createElement('script');
+           calendlyScript.src = 'https://assets.calendly.com/assets/external/widget.js';
+           calendlyScript.async = true;
+           calendlyScript.onload = init;
+           document.head.appendChild(calendlyScript);
+       };
+       document.head.appendChild(papaScript);
+   }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', loadDependencies);
-    } else {
-        loadDependencies();
-    }
+   if (document.readyState === 'loading') {
+       document.addEventListener('DOMContentLoaded', loadDependencies);
+   } else {
+       loadDependencies();
+   }
 })();
