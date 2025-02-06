@@ -4,6 +4,7 @@
     var aeMapping = {};
     var bundeslaender = [];
 
+    // Fügt CSS-Styles hinzu, inklusive 2rem Padding und 2rem border-radius für den Container
     function addStyles() {
         var css = document.createElement('style');
         css.type = 'text/css';
@@ -24,18 +25,23 @@
             '.ios-textarea { min-height: 120px; resize: vertical; width: 100%; }',
             '.ios-submit { background: #046C4E; color: white; padding: 16px 32px; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; width: 100%; margin-top: 24px; transition: all 0.3s ease; }',
             '.ios-submit:hover { background: #065F46; }',
-            '.ae-info { background: #f7fafc; border: 1px solid #E5E7EB; border-radius: 8px; padding: 20px; font-size: 18px; }'
+            '.ae-info { background: #f7fafc; border: 1px solid #E5E7EB; border-radius: 8px; padding: 20px; font-size: 18px; }',
+            '.success-message { margin: 1rem 0; padding: 1rem; background-color: #28a745; color: #fff; font-size: 20px; text-align: center; border-radius: 0.5rem; }'
         ].join('\n');
         document.head.appendChild(css);
     }
 
+    // Baut die HTML-Struktur auf:
+    // 1. Oben: Bundesland-Dropdown und AE-Info
+    // 2. Anschließend der Calendly-Bereich (Schritt 1)
+    // 3. Anschließend das Formular (Schritt 2) mit den statischen Optionen und dem unsichtbaren Bundesland-Feld
     function createStructure() {
         var container = document.querySelector('.setter-tool');
         if (!container) return;
         var html = `
             <div class="bundesland-section">
-                <h2 class="section-header">Schritt 1: Terminbuchung</h2>
-                <h3 class="subsection-header">Bundesland</h3>
+                <h2 class="section-header">Terminbuchung</h2>
+                <h3 class="subsection-header">Schritt 1 - Calendly Termin buchen</h3>
                 <div class="bundesland-input-container">
                     <select id="bundesland-select" class="ios-input required">
                         <option value="">Bundesland wählen...</option>
@@ -46,20 +52,139 @@
             <div id="calendly-container">
                 <div class="calendly-placeholder">Bitte wählen Sie zuerst ein Bundesland aus, um den Kalender zu laden.</div>
             </div>
+            <h3 class="subsection-header">Schritt 2 - Daten eintragen</h3>
             <form id="contact-form" class="form-section">
-                <h2 class="section-header">Schritt 2: Kontaktinformationen</h2>
+                <h2 class="section-header">Kontaktinformationen</h2>
+                <!-- Unsichtbares Feld für Bundesland -->
                 <input type="hidden" id="bundesland-hidden" name="bundesland" value="">
-<div class="form-group">
+                <div class="form-group">
                     <h3 class="subsection-header">Flächeninformationen</h3>
                     <div class="form-grid">
-                        <!-- Formularfelder wie gehabt -->
+                        <select class="ios-input required" name="flaechenart" required>
+                            <option value="">Flächenart wählen*</option>
+                            <option value="Freifläche">Freifläche</option>
+                            <option value="Dachfläche">Dachfläche</option>
+                        </select>
+                        
+                        <select class="ios-input required" name="flaechengroesse" required>
+                            <option value="">Flächengröße wählen*</option>
+                            <option value="Weniger als 2.000qm">Weniger als 2.000qm</option>
+                            <option value="2.000 bis 4.000qm">2.000 bis 4.000qm</option>
+                            <option value="Mehr als 4.000qm">Mehr als 4.000qm</option>
+                        </select>
+                        
+                        <select class="ios-input required" name="stromverbrauch" required>
+                            <option value="">Stromverbrauch wählen*</option>
+                            <option value="unter 100.000 kWh">unter 100.000 kWh</option>
+                            <option value="100.000 - 500.000 kWh">100.000 - 500.000 kWh</option>
+                            <option value="500.000 - 1 Mio kWh">500.000 - 1 Mio kWh</option>
+                            <option value="über 1 Mio kWh">über 1 Mio kWh</option>
+                        </select>
+                        <input type="number" class="ios-input required" name="standorte" placeholder="Anzahl der Standorte*" required>
                     </div>
                 </div>
+                <div class="form-group">
+                    <h3 class="subsection-header">Standortinformationen</h3>
+                    <div class="form-grid">
+                        <input type="text" class="ios-input required" name="strasse" placeholder="Standort Straße*" required>
+                        <input type="text" class="ios-input required" name="hausnummer" placeholder="Standort Hausnummer*" required>
+                        <input type="text" class="ios-input required" name="plz" placeholder="Standort Postleitzahl*" required>
+                        <input type="text" class="ios-input required" name="stadt" placeholder="Standort Stadt*" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <h3 class="subsection-header">Unternehmensinformationen</h3>
+                    <div class="form-grid">
+                        <input type="text" class="ios-input required" name="firma" placeholder="Firma*" required>
+                        <select class="ios-input required" name="branche" required>
+                            <option value="">Branche wählen*</option>
+                            <option value="MSP">MSP (Management-Dienstleistungsanbieter)</option>
+                            <option value="another">Another option</option>
+                            <option value="URP">URP (Unternehmensressourcenplanung)</option>
+                            <option value="Regierung">Regierung/Militär</option>
+                            <option value="Speicherungs-Dienstleistungsanbieter">Speicherungs-Dienstleistungsanbieter</option>
+                            <option value="Dienstleistungsanbieter">Dienstleistungsanbieter</option>
+                            <option value="Netzwerkausrüstungsunternehmen">Netzwerkausrüstungsunternehmen</option>
+                            <option value="Grossunternehmen">Großunternehmen</option>
+                            <option value="ASA">ASA (Applikationsserviceanbieter)</option>
+                            <option value="Systemintegrator">Systemintegrator</option>
+                            <option value="Klein_Mittelstaendige">Klein/Mittelständige Unternehmen</option>
+                            <option value="Nicht_Management_ISV">Nicht-Management-ISV</option>
+                            <option value="Management_ISV">Management ISV</option>
+                            <option value="Daten_Telekom_OEM">Daten/Telekom-OEM</option>
+                            <option value="Glashersteller">Glashersteller</option>
+                            <option value="Investmentfirma">Investmentfirma</option>
+                            <option value="Sporthalle">Sporthalle</option>
+                            <option value="Privatperson">Privatperson</option>
+                            <option value="Stadien">Stadien</option>
+                            <option value="Brauerei">Brauerei</option>
+                            <option value="Isoliertechnik">Isoliertechnik</option>
+                            <option value="Vermoegensverwaltung">Vermögensverwaltung</option>
+                            <option value="Spedition">Spedition</option>
+                            <option value="Bauprojektentwickler">Bauprojektentwickler</option>
+                            <option value="Textilindustrie">Textilindustrie</option>
+                            <option value="Maschinenbauunternehmen">Maschinenbauunternehmen</option>
+                            <option value="Metallindustrie">Metallindustrie</option>
+                            <option value="Immobilien">Immobilien</option>
+                            <option value="Elektroindustrie">Elektroindustrie</option>
+                            <option value="Dienstleistungen">Dienstleistungen</option>
+                            <option value="Lebensmittelindustrie">Lebensmittelindustrie</option>
+                            <option value="Logistik_Fulfillment">Logistik/Fulfillment</option>
+                            <option value="Rechenzentren">Rechenzentren</option>
+                            <option value="MedTech">MedTech</option>
+                            <option value="Entsorger">Entsorger</option>
+                            <option value="Automobilindustrie">Automobilindustrie</option>
+                            <option value="Moebelindustrie">Möbelindustrie</option>
+                            <option value="Gewerbeflaechen">Gewerbeflächen</option>
+                            <option value="Elektroinstallation">Elektroinstallation</option>
+                            <option value="Verpackungstechnik">Verpackungstechnik</option>
+                            <option value="Recyclingtechnik">Recyclingtechnik</option>
+                            <option value="Farben_Lackbranche">Farben- und Lackbranche</option>
+                            <option value="Hersteller_von_Batterien">Hersteller von Batterien</option>
+                            <option value="Landwirtschaft">Landwirtschaft</option>
+                            <option value="Kunststoffindustrie">Kunststoffindustrie</option>
+                            <option value="Papierindustrie">Papierindustrie</option>
+                            <option value="Grosshandel">Großhandel</option>
+                            <option value="Druckerei">Druckerei</option>
+                            <option value="Behoerde">Behörde</option>
+                            <option value="Frachtspeditionsdienst">Frachtspeditionsdienst</option>
+                            <option value="Lackindustrie">Lackindustrie</option>
+                            <option value="Elektrogeraete_Hersteller">Elektrogeräte Hersteller</option>
+                            <option value="Speicheraufruestung">Speicheraufrüstung</option>
+                            <option value="Optische_Netze">Optische Netze</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <h3 class="subsection-header">Kontaktperson</h3>
+                    <div class="form-grid">
+                        <select class="ios-input required" name="anrede" required>
+                            <option value="">Anrede wählen*</option>
+                            <option value="herr">Herr</option>
+                            <option value="frau">Frau</option>
+                        </select>
+                        <div></div>
+                        <input type="text" class="ios-input required" name="vorname" placeholder="Vorname*" required>
+                        <input type="text" class="ios-input required" name="nachname" placeholder="Nachname*" required>
+                        <input type="text" class="ios-input required" name="position" placeholder="Position*" required>
+                        <input type="email" class="ios-input required" name="email" placeholder="E-Mail*" required>
+                        <input type="tel" class="ios-input required" name="festnetz" placeholder="Festnetznummer* - Nur Zahlen!" required>
+                        <input type="tel" class="ios-input" name="mobil" placeholder="Mobil - Nur Zahlen!">
+                        <input type="url" class="ios-input" name="linkedin" placeholder="LinkedIn Profil: https://www.linkedin.com/in/beispiel" style="grid-column: span 2;">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <h3 class="subsection-header">Gesprächsnotiz*</h3>
+                    <textarea class="ios-input ios-textarea required" name="gespraechsnotiz" 
+                        placeholder="Gesprächsnotiz - Bitte ausführlich den Verlauf des Telefonats protokollieren (mind. 3 Sätze/Zeilen). Jede zusätzliche Information hilft unseren Kollegen im Termin.*" required></textarea>
+                </div>
+                <button type="submit" class="ios-submit">Informationen senden</button>
             </form>
         `;
         container.innerHTML = html;
     }
 
+    // Füllt das Bundesland-Dropdown mit den Werten aus der Spalte "Bundesland" des Google Sheets
     function updateBundeslandSelect() {
         var select = document.getElementById('bundesland-select');
         if (!select) return;
@@ -69,6 +194,7 @@
         });
     }
 
+    // Lädt die Daten aus dem Google Sheet, erstellt die Zuordnung Bundesland -> Account Executive und füllt das Dropdown
     function loadAEData() {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', SHEET_URL, true);
@@ -100,14 +226,15 @@
         xhr.send();
     }
 
+    // Aktualisiert den Bereich mit der Account Executive-Info und lädt den entsprechenden Calendly-Widget
     function updateUI(ae, bundesland) {
         var resultDiv = document.getElementById('ae-result');
         var calendlyDiv = document.getElementById('calendly-container');
         if (!resultDiv || !calendlyDiv) return;
         if (ae) {
             resultDiv.innerHTML = '<div class="ae-info">' +
-                '<div class="ae-title"><p>Zuständiger Account Executive für ' + bundesland + ':</p></div>' +
-                '<div class="ae-details"><p> ' + ae.name + '</p></div>' +
+                '<div class="ae-title"><p>Zuständiger Account Executive für ' + bundesland + '</p></div>' +
+                '<div class="ae-details"><p><strong>Name:</strong> ' + ae.name + '</p></div>' +
                 '</div>';
             if (ae.calendlyLink) {
                 calendlyDiv.innerHTML = '<div class="calendly-inline-widget" ' +
@@ -124,6 +251,7 @@
         }
     }
 
+    // Initialisiert das Script: Fügt Styles hinzu, baut die Struktur auf, lädt die Daten und setzt die Event-Listener
     function init() {
         addStyles();
         createStructure();
@@ -132,6 +260,7 @@
         if (bundeslandSelect) {
             bundeslandSelect.addEventListener('change', function() {
                 var selectedBundesland = this.value;
+                // Aktualisiere auch das unsichtbare Feld im Formular
                 document.getElementById('bundesland-hidden').value = selectedBundesland;
                 if (selectedBundesland) {
                     updateUI(aeMapping[selectedBundesland], selectedBundesland);
@@ -151,39 +280,27 @@
                         body: JSON.stringify(data)
                     });
                     if (response.ok) {
-                        // Scroll zum Anfang des Formulars
-                        form.scrollIntoView({ behavior: 'smooth' });
-
-                        // Erstelle Erfolgsmeldung
+                        // Entferne eventuelle bestehende Erfolgsmeldung
+                        var existingMsg = document.querySelector('.success-message');
+                        if (existingMsg) {
+                            existingMsg.remove();
+                        }
+                        // Erstelle eine prominente Erfolgsmeldung als Overlay
                         var successMessage = document.createElement('div');
-                        successMessage.innerHTML = `
-                            <div style="
-                                background-color: #dcfce7;
-                                border: 1px solid #22c55e;
-                                color: #166534;
-                                padding: 16px;
-                                border-radius: 8px;
-                                margin-bottom: 20px;
-                                font-size: 16px;
-                                font-weight: 500;
-                                text-align: center;
-                                position: relative;
-                                z-index: 1000;
-                            ">
-                                ✓ Daten wurden erfolgreich gespeichert!
-                            </div>
-                        `;
-                        
-                        // Füge die Nachricht am Anfang des Formulars ein
-                        form.insertBefore(successMessage, form.firstChild);
-
-                        // Entferne die Nachricht nach 3 Sekunden
+                        successMessage.className = 'success-message';
+                        successMessage.style.position = 'fixed';
+                        successMessage.style.top = '20px';
+                        successMessage.style.left = '50%';
+                        successMessage.style.transform = 'translateX(-50%)';
+                        successMessage.style.zIndex = '1000';
+                        successMessage.textContent = 'Daten wurden erfolgreich gespeichert!';
+                        document.body.appendChild(successMessage);
+                        // Lasse die Nachricht 5 Sekunden sichtbar bleiben, bevor sie automatisch entfernt wird
                         setTimeout(function() {
                             if (successMessage && successMessage.parentNode) {
-                                successMessage.remove();
+                                successMessage.parentNode.removeChild(successMessage);
                             }
-                        }, 3000);
-
+                        }, 5000);
                         form.reset();
                     } else {
                         throw new Error('Netzwerk-Antwort war nicht ok');
