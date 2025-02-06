@@ -38,8 +38,8 @@
     function createStructure() {
         var container = document.querySelector('.setter-tool');
         if (!container) return;
-        var html = `
-            <div class="bundesland-section">
+        var html = 
+            `<div class="bundesland-section">
                 <h2 class="section-header">Terminbuchung</h2>
                 <h3 class="subsection-header">Schritt 1 - Calendly Termin buchen</h3>
                 <div class="bundesland-input-container">
@@ -179,8 +179,7 @@
                         placeholder="Gesprächsnotiz - Bitte ausführlich den Verlauf des Telefonats protokollieren (mind. 3 Sätze/Zeilen). Jede zusätzliche Information hilft unseren Kollegen im Termin.*" required></textarea>
                 </div>
                 <button type="submit" class="ios-submit">Informationen senden</button>
-            </form>
-        `;
+            </form>`;
         container.innerHTML = html;
     }
 
@@ -292,7 +291,7 @@
                         successMessage.style.top = '20px';
                         successMessage.style.left = '50%';
                         successMessage.style.transform = 'translateX(-50%)';
-                        successMessage.style.zIndex = '1000';
+                        successMessage.style.zIndex = '9999999'; // <--- Hier angehoben
                         successMessage.textContent = 'Daten wurden erfolgreich gespeichert!';
                         document.body.appendChild(successMessage);
                         // Lasse die Nachricht 5 Sekunden sichtbar bleiben, bevor sie automatisch entfernt wird
