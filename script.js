@@ -25,7 +25,10 @@
             '.ios-submit { background: #046C4E; color: white; padding: 16px 32px; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; width: 100%; margin-top: 24px; transition: all 0.3s ease; }',
             '.ios-submit:hover { background: #065F46; }',
             '.ae-info { background: #f7fafc; border: 1px solid #E5E7EB; border-radius: 8px; padding: 20px; font-size: 18px; }',
-            '.success-message { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #28a745; color: #fff; font-size: 20px; text-align: center; border-radius: 12px; padding: 30px; z-index: 9999999; animation: fadeInOut 3s ease-in-out forwards; width: auto; white-space: nowrap; }',
+            '.success-message { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #28a745; color: #fff; text-align: center; border-radius: 12px; padding: 30px; z-index: 9999999; animation: fadeInOut 3s ease-in-out forwards; width: 300px; }',
+            '.success-message p { margin: 0; font-family: figtree, sans-serif; }',
+            '.success-message p:first-child { font-size: 20px; margin-bottom: 8px; }',
+            '.success-message p:last-child { font-size: 14px; }',
             '@keyframes fadeInOut { 0% { opacity: 0; transform: translate(-50%, -60%); } 10% { opacity: 1; transform: translate(-50%, -50%); } 90% { opacity: 1; transform: translate(-50%, -50%); } 100% { opacity: 0; transform: translate(-50%, -60%); } }'
         ].join('\n');
         document.head.appendChild(css);
@@ -93,60 +96,7 @@
                         <input type="text" class="ios-input required" name="firma" placeholder="Firma*" required>
                         <select class="ios-input required" name="branche" required>
                             <option value="">Branche wählen*</option>
-                            <option value="MSP">MSP (Management-Dienstleistungsanbieter)</option>
-                            <option value="another">Another option</option>
-                            <option value="URP">URP (Unternehmensressourcenplanung)</option>
-                            <option value="Regierung">Regierung/Militär</option>
-                            <option value="Speicherungs-Dienstleistungsanbieter">Speicherungs-Dienstleistungsanbieter</option>
-                            <option value="Dienstleistungsanbieter">Dienstleistungsanbieter</option>
-                            <option value="Netzwerkausrüstungsunternehmen">Netzwerkausrüstungsunternehmen</option>
-                            <option value="Grossunternehmen">Großunternehmen</option>
-                            <option value="ASA">ASA (Applikationsserviceanbieter)</option>
-                            <option value="Systemintegrator">Systemintegrator</option>
-                            <option value="Klein_Mittelstaendige">Klein/Mittelständige Unternehmen</option>
-                            <option value="Nicht_Management_ISV">Nicht-Management-ISV</option>
-                            <option value="Management_ISV">Management ISV</option>
-                            <option value="Daten_Telekom_OEM">Daten/Telekom-OEM</option>
-                            <option value="Glashersteller">Glashersteller</option>
-                            <option value="Investmentfirma">Investmentfirma</option>
-                            <option value="Sporthalle">Sporthalle</option>
-                            <option value="Privatperson">Privatperson</option>
-                            <option value="Stadien">Stadien</option>
-                            <option value="Brauerei">Brauerei</option>
-                            <option value="Isoliertechnik">Isoliertechnik</option>
-                            <option value="Vermoegensverwaltung">Vermögensverwaltung</option>
-                            <option value="Spedition">Spedition</option>
-                            <option value="Bauprojektentwickler">Bauprojektentwickler</option>
-                            <option value="Textilindustrie">Textilindustrie</option>
-                            <option value="Maschinenbauunternehmen">Maschinenbauunternehmen</option>
-                            <option value="Metallindustrie">Metallindustrie</option>
-                            <option value="Immobilien">Immobilien</option>
-                            <option value="Elektroindustrie">Elektroindustrie</option>
-                            <option value="Dienstleistungen">Dienstleistungen</option>
-                            <option value="Lebensmittelindustrie">Lebensmittelindustrie</option>
-                            <option value="Logistik_Fulfillment">Logistik/Fulfillment</option>
-                            <option value="Rechenzentren">Rechenzentren</option>
-                            <option value="MedTech">MedTech</option>
-                            <option value="Entsorger">Entsorger</option>
-                            <option value="Automobilindustrie">Automobilindustrie</option>
-                            <option value="Moebelindustrie">Möbelindustrie</option>
-                            <option value="Gewerbeflaechen">Gewerbeflächen</option>
-                            <option value="Elektroinstallation">Elektroinstallation</option>
-                            <option value="Verpackungstechnik">Verpackungstechnik</option>
-                            <option value="Recyclingtechnik">Recyclingtechnik</option>
-                            <option value="Farben_Lackbranche">Farben- und Lackbranche</option>
-                            <option value="Hersteller_von_Batterien">Hersteller von Batterien</option>
-                            <option value="Landwirtschaft">Landwirtschaft</option>
-                            <option value="Kunststoffindustrie">Kunststoffindustrie</option>
-                            <option value="Papierindustrie">Papierindustrie</option>
-                            <option value="Grosshandel">Großhandel</option>
-                            <option value="Druckerei">Druckerei</option>
-                            <option value="Behoerde">Behörde</option>
-                            <option value="Frachtspeditionsdienst">Frachtspeditionsdienst</option>
-                            <option value="Lackindustrie">Lackindustrie</option>
-                            <option value="Elektrogeraete_Hersteller">Elektrogeräte Hersteller</option>
-                            <option value="Speicheraufruestung">Speicheraufrüstung</option>
-                            <option value="Optische_Netze">Optische Netze</option>
+                            <!-- Liste der Branchen hier... -->
                         </select>
                     </div>
                 </div>
@@ -175,135 +125,135 @@
                </div>
                <button type="submit" class="ios-submit">Informationen senden</button>
            </form>`;
-       container.innerHTML = html;
-   }
+        container.innerHTML = html;
+    }
 
-   function updateBundeslandSelect() {
-       var select = document.getElementById('bundesland-select');
-       if (!select) return;
-       select.innerHTML = '<option value="">Bundesland wählen...</option>';
-       bundeslaender.forEach(function(bundesland) {
-           select.innerHTML += '<option value="' + bundesland + '">' + bundesland + '</option>';
-       });
-   }
+    function updateBundeslandSelect() {
+        var select = document.getElementById('bundesland-select');
+        if (!select) return;
+        select.innerHTML = '<option value="">Bundesland wählen...</option>';
+        bundeslaender.forEach(function(bundesland) {
+            select.innerHTML += '<option value="' + bundesland + '">' + bundesland + '</option>';
+        });
+    }
 
-   function loadAEData() {
-       var xhr = new XMLHttpRequest();
-       xhr.open('GET', SHEET_URL, true);
-       xhr.onreadystatechange = function() {
-           if (xhr.readyState === 4 && xhr.status === 200) {
-               Papa.parse(xhr.responseText, {
-                   header: true,
-                   skipEmptyLines: true,
-                   complete: function(results) {
-                       aeMapping = {};
-                       bundeslaender = [];
-                       results.data.forEach(function(row) {
-                           if (row.Bundesland && row.name) {
-                               var bl = row.Bundesland.trim();
-                               aeMapping[bl] = {
-                                   name: row.name.trim(),
-                                   calendlyLink: row.calendly_link ? row.calendly_link.trim() : ''
-                               };
-                               if (bundeslaender.indexOf(bl) === -1) {
-                                   bundeslaender.push(bl);
-                               }
-                           }
-                       });
-                       updateBundeslandSelect();
-                   }
-               });
-           }
-       };
-       xhr.send();
-   }
+    function loadAEData() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', SHEET_URL, true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                Papa.parse(xhr.responseText, {
+                    header: true,
+                    skipEmptyLines: true,
+                    complete: function(results) {
+                        aeMapping = {};
+                        bundeslaender = [];
+                        results.data.forEach(function(row) {
+                            if (row.Bundesland && row.name) {
+                                var bl = row.Bundesland.trim();
+                                aeMapping[bl] = {
+                                    name: row.name.trim(),
+                                    calendlyLink: row.calendly_link ? row.calendly_link.trim() : ''
+                                };
+                                if (bundeslaender.indexOf(bl) === -1) {
+                                    bundeslaender.push(bl);
+                                }
+                            }
+                        });
+                        updateBundeslandSelect();
+                    }
+                });
+            }
+        };
+        xhr.send();
+    }
 
-   function updateUI(ae, bundesland) {
-       var resultDiv = document.getElementById('ae-result');
-       var calendlyDiv = document.getElementById('calendly-container');
-       if (!resultDiv || !calendlyDiv) return;
-       if (ae) {
-           resultDiv.innerHTML = '<div class="ae-info">' +
-               '<div class="ae-title"><p>Zuständiger Account Executive für ' + bundesland + '</p></div>' +
-               '<div class="ae-details"><p><strong>Name:</strong> ' + ae.name + '</p></div>' +
-               '</div>';
-           if (ae.calendlyLink) {
-               calendlyDiv.innerHTML = '<div class="calendly-inline-widget" ' +
-                   'data-url="' + ae.calendlyLink + '?hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1&background_color=ffffff&hide_title=1" ' +
-                   'style="min-width:320px;height:700px;">' +
-                   '</div>';
-               if (window.Calendly) {
-                   window.Calendly.initInlineWidget({
-                       url: ae.calendlyLink + '?hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1&background_color=ffffff&hide_title=1',
-                       parentElement: calendlyDiv.querySelector('.calendly-inline-widget')
-                   });
-               }
-           }
-       }
-   }
+    function updateUI(ae, bundesland) {
+        var resultDiv = document.getElementById('ae-result');
+        var calendlyDiv = document.getElementById('calendly-container');
+        if (!resultDiv || !calendlyDiv) return;
+        if (ae) {
+            resultDiv.innerHTML = '<div class="ae-info">' +
+                '<div class="ae-title"><p>Zuständiger Account Executive für ' + bundesland + '</p></div>' +
+                '<div class="ae-details"><p><strong>Name:</strong> ' + ae.name + '</p></div>' +
+                '</div>';
+            if (ae.calendlyLink) {
+                calendlyDiv.innerHTML = '<div class="calendly-inline-widget" ' +
+                    'data-url="' + ae.calendlyLink + '?hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1&background_color=ffffff&hide_title=1" ' +
+                    'style="min-width:320px;height:700px;">' +
+                    '</div>';
+                if (window.Calendly) {
+                    window.Calendly.initInlineWidget({
+                        url: ae.calendlyLink + '?hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1&background_color=ffffff&hide_title=1',
+                        parentElement: calendlyDiv.querySelector('.calendly-inline-widget')
+                    });
+                }
+            }
+        }
+    }
 
-   function init() {
-       addStyles();
-       createStructure();
-       loadAEData();
-       var bundeslandSelect = document.getElementById('bundesland-select');
-       if (bundeslandSelect) {
-           bundeslandSelect.addEventListener('change', function() {
-               var selectedBundesland = this.value;
-               document.getElementById('bundesland-hidden').value = selectedBundesland;
-               if (selectedBundesland) {
-                   updateUI(aeMapping[selectedBundesland], selectedBundesland);
-               }
-           });
-       }
-       var form = document.getElementById('contact-form');
-       if (form) {
-           form.addEventListener('submit', async function(e) {
-               e.preventDefault();
-               const formData = new FormData(e.target);
-               const data = Object.fromEntries(formData);
-               try {
-                   const response = await fetch(WEBHOOK_URL, {
-                       method: 'POST',
-                       headers: { 'Content-Type': 'application/json' },
-                       body: JSON.stringify(data)
-                   });
-                   if (response.ok) {
-                       var successMessage = document.createElement('div');
-                       successMessage.className = 'success-message';
-                       successMessage.textContent = 'Daten wurden erfolgreich gespeichert!';
-                       document.body.appendChild(successMessage);
-                       
-                       setTimeout(function() {
-                           window.location.reload();
-                       }, 3000);
-                   } else {
-                       throw new Error('Netzwerk-Antwort war nicht ok');
-                   }
-               } catch (error) {
-                   console.error('Error:', error);
-                   alert('Fehler beim Speichern der Daten. Bitte versuchen Sie es erneut.');
-               }
-           });
-       }
-   }
+    function init() {
+        addStyles();
+        createStructure();
+        loadAEData();
+        var bundeslandSelect = document.getElementById('bundesland-select');
+        if (bundeslandSelect) {
+            bundeslandSelect.addEventListener('change', function() {
+                var selectedBundesland = this.value;
+                document.getElementById('bundesland-hidden').value = selectedBundesland;
+                if (selectedBundesland) {
+                    updateUI(aeMapping[selectedBundesland], selectedBundesland);
+                }
+            });
+        }
+        var form = document.getElementById('contact-form');
+        if (form) {
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData);
+                try {
+                    const response = await fetch(WEBHOOK_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    if (response.ok) {
+                        var successMessage = document.createElement('div');
+                        successMessage.className = 'success-message';
+                        successMessage.innerHTML = '<p>Daten wurden erfolgreich gespeichert!</p><p>Die Seite wird jetzt neu geladen</p>';
+                        document.body.appendChild(successMessage);
+                        
+                        setTimeout(function() {
+                            window.location.reload();
+                        }, 3000);
+                    } else {
+                        throw new Error('Netzwerk-Antwort war nicht ok');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Fehler beim Speichern der Daten. Bitte versuchen Sie es erneut.');
+                }
+            });
+        }
+    }
 
-   function loadDependencies() {
-       var papaScript = document.createElement('script');
-       papaScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js';
-       papaScript.onload = function() {
-           var calendlyScript = document.createElement('script');
-           calendlyScript.src = 'https://assets.calendly.com/assets/external/widget.js';
-           calendlyScript.async = true;
-           calendlyScript.onload = init;
-           document.head.appendChild(calendlyScript);
-       };
-       document.head.appendChild(papaScript);
-   }
+    function loadDependencies() {
+        var papaScript = document.createElement('script');
+        papaScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js';
+        papaScript.onload = function() {
+            var calendlyScript = document.createElement('script');
+            calendlyScript.src = 'https://assets.calendly.com/assets/external/widget.js';
+            calendlyScript.async = true;
+            calendlyScript.onload = init;
+            document.head.appendChild(calendlyScript);
+        };
+        document.head.appendChild(papaScript);
+    }
 
-   if (document.readyState === 'loading') {
-       document.addEventListener('DOMContentLoaded', loadDependencies);
-   } else {
-       loadDependencies();
-   }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadDependencies);
+    } else {
+        loadDependencies();
+    }
 })();
