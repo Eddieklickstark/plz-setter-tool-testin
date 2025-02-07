@@ -25,7 +25,7 @@
             '.ios-submit { background: #046C4E; color: white; padding: 16px 32px; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; width: 100%; margin-top: 24px; transition: all 0.3s ease; }',
             '.ios-submit:hover { background: #065F46; }',
             '.ae-info { background: #f7fafc; border: 1px solid #E5E7EB; border-radius: 8px; padding: 20px; font-size: 18px; }',
-            '.success-message { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #28a745; color: #fff; font-size: 20px; text-align: center; border-radius: 12px; padding: 30px; z-index: 9999999; animation: fadeInOut 3s ease-in-out forwards; }',
+            '.success-message { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #28a745; color: #fff; font-size: 20px; text-align: center; border-radius: 12px; padding: 30px; z-index: 9999999; animation: fadeInOut 3s ease-in-out forwards; width: auto; white-space: nowrap; }',
             '@keyframes fadeInOut { 0% { opacity: 0; transform: translate(-50%, -60%); } 10% { opacity: 1; transform: translate(-50%, -50%); } 90% { opacity: 1; transform: translate(-50%, -50%); } 100% { opacity: 0; transform: translate(-50%, -60%); } }'
         ].join('\n');
         document.head.appendChild(css);
