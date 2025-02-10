@@ -15,7 +15,7 @@
             '.bundesland-input-container { position: relative; margin-bottom: 20px; }',
             '.ios-input { width: 100%; padding: 12px; border: 1px solid #E5E7EB; border-radius: 10px; font-size: 16px; background: #FAFAFA; }',
             '.ios-input:focus { outline: none; border-color: #046C4E; background: #FFFFFF; box-shadow: 0 0 0 3px rgba(4, 108, 78, 0.1); }',
-            '.calendly-placeholder { background: #F9FAFB; border: 2px dashed #E5E7EB; border-radius: 12px; padding: 40px; text-align: center; color: #6B7280; min-height: 400px; display: flex; align-items: center; justify-content: center; margin: 20px 0; }',
+            '.calendly-placeholder { background: #F9FAFB; border: 2px dashed #E5E7EB; border-radius: 12px; padding: 40px; text-align: center; color: #6B7280; min-height: 400px; display: flex; align-items: center; justify-content: center; }',
             '#calendly-container { margin: 20px 0; border-radius: 12px; overflow: hidden; background: white; min-height: 400px; }',
             '.form-section { margin-top: 40px; }',
             '.form-group { margin-bottom: 32px; }',
@@ -25,11 +25,11 @@
             '.ios-submit { background: #046C4E; color: white; padding: 16px 32px; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; width: 100%; margin-top: 24px; transition: all 0.3s ease; }',
             '.ios-submit:hover { background: #065F46; }',
             '.ae-info { background: #f7fafc; border: 1px solid #E5E7EB; border-radius: 8px; padding: 20px; font-size: 18px; }',
-            '.success-message { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #28a745; color: #fff; text-align: center; border-radius: 12px; padding: 30px; z-index: 9999999; animation: fadeInOut 3s ease-in-out forwards; width: 300px; }',
+            '.success-message { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #28a745; color: #fff; text-align: center; border-radius: 12px; padding: 30px; width: auto; max-width: 80%; opacity: 0; animation: fadeInOut 5s ease-in-out; }',
             '.success-message p { margin: 0; font-family: figtree, sans-serif; }',
             '.success-message p:first-child { font-size: 20px; margin-bottom: 8px; }',
             '.success-message p:last-child { font-size: 14px; }',
-            '@keyframes fadeInOut { 0% { opacity: 0; transform: translate(-50%, -60%); } 10% { opacity: 1; transform: translate(-50%, -50%); } 90% { opacity: 1; transform: translate(-50%, -50%); } 100% { opacity: 0; transform: translate(-50%, -60%); } }'
+            '@keyframes fadeInOut { 0% { opacity: 0; transform: translate(-50%, -60%); } 10% { opacity: 1; transform: translate(-50%, -50%); } 90% { opacity: 1; transform: translate(-50%, -50%); } 100% { opacity: 0; transform: translate(-50%, -60%); } }',
         ].join('\n');
         document.head.appendChild(css);
     }
@@ -278,7 +278,10 @@
                         document.body.appendChild(successMessage);
                         
                         setTimeout(function() {
-                            window.location.reload();
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                            setTimeout(function() {
+                                window.location.reload();
+                            }, 1000);
                         }, 3000);
                     } else {
                         throw new Error('Netzwerk-Antwort war nicht ok');
