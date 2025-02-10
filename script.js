@@ -4,35 +4,35 @@
     var aeMapping = {};
     var bundeslaender = [];
 
-function addStyles() {
-    var css = document.createElement('style');
-    css.type = 'text/css';
-    css.innerHTML = [
-        '.setter-tool { max-width: 800px; margin: 0 auto; padding: 2rem; border-radius: 2rem; font-family: figtree, sans-serif; }',
-        '.section-header { font-size: 22px; color: #111827; margin-bottom: 16px; font-weight: 600; padding-bottom: 8px; border-bottom: 1px solid #E5E7EB; }',
-        '.subsection-header { font-size: 18px; color: #374151; margin: 16px 0; font-weight: 500; }',
-        '.bundesland-section { margin-bottom: 40px; }',
-        '.bundesland-input-container { position: relative; margin-bottom: 20px; }',
-        '.ios-input { width: 100%; padding: 12px; border: 1px solid #E5E7EB; border-radius: 10px; font-size: 16px; background: #FAFAFA; }',
-        '.ios-input:focus { outline: none; border-color: #046C4E; background: #FFFFFF; box-shadow: 0 0 0 3px rgba(4, 108, 78, 0.1); }',
-        '.calendly-placeholder { background: #F9FAFB; border: 2px dashed #E5E7EB; border-radius: 12px; padding: 40px; text-align: center; color: #6B7280; min-height: 400px; display: flex; align-items: center; justify-content: center; }',
-        '#calendly-container { margin: 20px 0; border-radius: 12px; overflow: hidden; background: white; min-height: 400px; }',
-        '.form-section { margin-top: 40px; }',
-        '.form-group { margin-bottom: 32px; }',
-        '.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }',
-        '@media (max-width: 640px) { .form-grid { grid-template-columns: 1fr; } }',
-        '.ios-textarea { min-height: 120px; resize: vertical; width: 100%; }',
-        '.ios-submit { background: #046C4E; color: white; padding: 16px 32px; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; width: 100%; margin-top: 24px; transition: all 0.3s ease; }',
-        '.ios-submit:hover { background: #065F46; }',
-        '.ae-info { background: #f7fafc; border: 1px solid #E5E7EB; border-radius: 8px; padding: 20px; font-size: 18px; }',
-        '.success-message { background-color: #28a745; color: #fff; text-align: center; border-radius: 12px; padding: 15px; margin-top: 10px; display: none; }',
-        '.success-message p { margin: 0; font-family: figtree, sans-serif; }',
-        '.success-message p:first-child { font-size: 20px; margin-bottom: 8px; }',
-        '.success-message p:last-child { font-size: 14px; }',
-        '.show { display: block !important; }',
-    ].join('\n');
-    document.head.appendChild(css);
-}
+    function addStyles() {
+        var css = document.createElement('style');
+        css.type = 'text/css';
+        css.innerHTML = [
+            '.setter-tool { max-width: 800px; margin: 0 auto; padding: 2rem; border-radius: 2rem; font-family: figtree, sans-serif; }',
+            '.section-header { font-size: 22px; color: #111827; margin-bottom: 16px; font-weight: 600; padding-bottom: 8px; border-bottom: 1px solid #E5E7EB; }',
+            '.subsection-header { font-size: 18px; color: #374151; margin: 16px 0; font-weight: 500; }',
+            '.bundesland-section { margin-bottom: 40px; }',
+            '.bundesland-input-container { position: relative; margin-bottom: 20px; }',
+            '.ios-input { width: 100%; padding: 12px; border: 1px solid #E5E7EB; border-radius: 10px; font-size: 16px; background: #FAFAFA; }',
+            '.ios-input:focus { outline: none; border-color: #046C4E; background: #FFFFFF; box-shadow: 0 0 0 3px rgba(4, 108, 78, 0.1); }',
+            '.calendly-placeholder { background: #F9FAFB; border: 2px dashed #E5E7EB; border-radius: 12px; padding: 40px; text-align: center; color: #6B7280; min-height: 400px; display: flex; align-items: center; justify-content: center; }',
+            '#calendly-container { margin: 20px 0; border-radius: 12px; overflow: hidden; background: white; min-height: 400px; }',
+            '.form-section { margin-top: 40px; }',
+            '.form-group { margin-bottom: 32px; }',
+            '.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }',
+            '@media (max-width: 640px) { .form-grid { grid-template-columns: 1fr; } }',
+            '.ios-textarea { min-height: 120px; resize: vertical; width: 100%; }',
+            '.ios-submit { background: #046C4E; color: white; padding: 16px 32px; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; width: 100%; margin-top: 24px; transition: all 0.3s ease; }',
+            '.ios-submit:hover { background: #065F46; }',
+            '.ae-info { background: #f7fafc; border: 1px solid #E5E7EB; border-radius: 8px; padding: 20px; font-size: 18px; }',
+            '.success-message { background-color: #28a745; color: #fff; text-align: center; border-radius: 12px; padding: 15px; margin-top: 10px; display: none; }',
+            '.success-message p { margin: 0; font-family: figtree, sans-serif; }',
+            '.success-message p:first-child { font-size: 20px; margin-bottom: 8px; }',
+            '.success-message p:last-child { font-size: 14px; }',
+            '.show { display: block !important; }'
+        ].join('\n');
+        document.head.appendChild(css);
+    }
 
     function createStructure() {
         var container = document.querySelector('.setter-tool');
@@ -175,9 +175,13 @@ function addStyles() {
                    <h3 class="subsection-header">Gesprächsnotiz*</h3>
                    <textarea class="ios-input ios-textarea required" name="gespraechsnotiz" 
                        placeholder="Gesprächsnotiz - Bitte ausführlich den Verlauf des Telefonats protokollieren (mind. 3 Sätze/Zeilen). Jede zusätzliche Information hilft unseren Kollegen im Termin.*" required></textarea>
-               </div>
-               <button type="submit" class="ios-submit">Informationen senden</button>
-           </form>`;
+                </div>
+                <button type="submit" class="ios-submit">Informationen senden</button>
+                <div class="success-message" id="success-message">
+                    <p>Daten wurden erfolgreich gespeichert!</p>
+                    <p>Die Seite wird jetzt neu geladen</p>
+                </div>
+            </form>`;
         container.innerHTML = html;
     }
 
@@ -225,16 +229,19 @@ function addStyles() {
         var resultDiv = document.getElementById('ae-result');
         var calendlyDiv = document.getElementById('calendly-container');
         if (!resultDiv || !calendlyDiv) return;
+
         if (ae) {
             resultDiv.innerHTML = '<div class="ae-info">' +
                 '<div class="ae-title"><p>Zuständiger Account Executive für ' + bundesland + '</p></div>' +
                 '<div class="ae-details"><p><strong>Name:</strong> ' + ae.name + '</p></div>' +
-                '</div>';
+            '</div>';
+
             if (ae.calendlyLink) {
                 calendlyDiv.innerHTML = '<div class="calendly-inline-widget" ' +
                     'data-url="' + ae.calendlyLink + '?hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1&background_color=ffffff&hide_title=1" ' +
                     'style="min-width:320px;height:700px;">' +
                     '</div>';
+
                 if (window.Calendly) {
                     window.Calendly.initInlineWidget({
                         url: ae.calendlyLink + '?hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1&background_color=ffffff&hide_title=1',
@@ -249,6 +256,7 @@ function addStyles() {
         addStyles();
         createStructure();
         loadAEData();
+
         var bundeslandSelect = document.getElementById('bundesland-select');
         if (bundeslandSelect) {
             bundeslandSelect.addEventListener('change', function() {
@@ -259,31 +267,39 @@ function addStyles() {
                 }
             });
         }
+
         var form = document.getElementById('contact-form');
         if (form) {
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 const formData = new FormData(e.target);
                 const data = Object.fromEntries(formData);
+
                 try {
                     const response = await fetch(WEBHOOK_URL, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(data)
                     });
+
                     if (response.ok) {
-                        var successMessage = document.createElement('div');
-                        successMessage.className = 'success-message show';
-                        successMessage.innerHTML = '<p>Daten wurden erfolgreich gespeichert!</p>';
-                        form.appendChild(successMessage);
-                        
+                        // Zeigt die Erfolgsmeldung an
+                        var successMsg = document.getElementById('success-message');
+                        if (successMsg) {
+                            successMsg.classList.add('show');
+                        }
+
+                        // Blende sie nach 3 Sekunden aus und reload
                         setTimeout(function() {
-                            successMessage.classList.remove('show');
+                            if (successMsg) {
+                                successMsg.classList.remove('show');
+                            }
                             setTimeout(function() {
                                 window.scrollTo({ top: 0, behavior: 'smooth' });
                                 window.location.reload();
                             }, 1000);
                         }, 3000);
+
                     } else {
                         throw new Error('Netzwerk-Antwort war nicht ok');
                     }
@@ -293,6 +309,7 @@ function addStyles() {
                 }
             });
         }
+    }
 
     function loadDependencies() {
         var papaScript = document.createElement('script');
@@ -312,4 +329,5 @@ function addStyles() {
     } else {
         loadDependencies();
     }
+
 })();
