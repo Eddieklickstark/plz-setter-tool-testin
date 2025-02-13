@@ -37,7 +37,7 @@
     function createStructure() {
         var container = document.querySelector('.setter-tool');
         if (!container) return;
-        var html = 
+        var html =
             `<div class="bundesland-section">
                 <h2 class="section-header">Terminbuchung</h2>
                 <h3 class="subsection-header">Schritt 1 - Calendly Termin buchen</h3>
@@ -63,14 +63,14 @@
                             <option value="Freifläche">Freifläche</option>
                             <option value="Dachfläche">Dachfläche</option>
                         </select>
-                        
+
                         <select class="ios-input required" name="flaechengroesse" required>
                             <option value="">Flächengröße wählen*</option>
                             <option value="Weniger als 2.000qm">Weniger als 2.000qm</option>
                             <option value="2.000 bis 4.000qm">2.000 bis 4.000qm</option>
                             <option value="Mehr als 4.000qm">Mehr als 4.000qm</option>
                         </select>
-                        
+
                         <select class="ios-input required" name="stromverbrauch" required>
                             <option value="">Stromverbrauch wählen*</option>
                             <option value="unter 100.000 kWh">unter 100.000 kWh</option>
@@ -158,7 +158,7 @@
                 </div>
                 <div class="form-group">
                    <h3 class="subsection-header">Gesprächsnotiz*</h3>
-                   <textarea class="ios-input ios-textarea required" name="gespraechsnotiz" 
+                   <textarea class="ios-input ios-textarea required" name="gespraechsnotiz"
                        placeholder="Gesprächsnotiz - Bitte ausführlich den Verlauf des Telefonats protokollieren (mind. 3 Sätze/Zeilen). Jede zusätzliche Information hilft unseren Kollegen im Termin.*" required></textarea>
                 </div>
                 <button type="submit" class="ios-submit">Informationen senden</button>
@@ -274,7 +274,7 @@
                             successMsg.classList.add('show');
                         }
 
-                        // Blende sie nach 3 Sekunden aus und reload
+                        // Warte 2 Sekunden, bevor die Seite neu geladen wird
                         setTimeout(function() {
                             if (successMsg) {
                                 successMsg.classList.remove('show');
@@ -282,7 +282,7 @@
                             setTimeout(function() {
                                 window.scrollTo({ top: 0, behavior: 'smooth' });
                                 window.location.reload();
-                            }, 100);
+                            }, 1000); // Warte 1 Sekunde nach dem Scrollen, bevor die Seite neu geladen wird
                         }, 2000);
 
                     } else {
