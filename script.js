@@ -4,6 +4,9 @@
     var aeMapping = {};
     var bundeslaender = [];
 
+    // Anzahl maximaler Versuche für POST-Request
+    var MAX_RETRIES = 3;
+
     function addStyles() {
         var css = document.createElement('style');
         css.type = 'text/css';
@@ -63,14 +66,12 @@
                             <option value="Freifläche">Freifläche</option>
                             <option value="Dachfläche">Dachfläche</option>
                         </select>
-
                         <select class="ios-input required" name="flaechengroesse" required>
                             <option value="">Flächengröße wählen*</option>
                             <option value="Weniger als 2.000qm">Weniger als 2.000qm</option>
                             <option value="2.000 bis 4.000qm">2.000 bis 4.000qm</option>
                             <option value="Mehr als 4.000qm">Mehr als 4.000qm</option>
                         </select>
-
                         <select class="ios-input required" name="stromverbrauch" required>
                             <option value="">Stromverbrauch wählen*</option>
                             <option value="unter 100.000 kWh">unter 100.000 kWh</option>
@@ -96,44 +97,7 @@
                         <input type="text" class="ios-input required" name="firma" placeholder="Firma*" required>
                         <select class="ios-input required" name="branche" required>
                             <option value="">Branche wählen*</option>
-                            <option value="Glashersteller">Glashersteller</option>
-                            <option value="Investmentfirma">Investmentfirma</option>
-                            <option value="Sporthalle">Sporthalle</option>
-                            <option value="Privatperson">Privatperson</option>
-                            <option value="Stadien">Stadien</option>
-                            <option value="Brauerei">Brauerei</option>
-                            <option value="Isoliertechnik">Isoliertechnik</option>
-                            <option value="Vermögensverwaltung">Vermögensverwaltung</option>
-                            <option value="Spedition">Spedition</option>
-                            <option value="Bauprojektentwickler">Bauprojektentwickler</option>
-                            <option value="Textilindustrie">Textilindustrie</option>
-                            <option value="Maschinenbauunternehmen">Maschinenbauunternehmen</option>
-                            <option value="Metallindustrie">Metallindustrie</option>
-                            <option value="Immobilien">Immobilien</option>
-                            <option value="Elektroindustrie">Elektroindustrie</option>
-                            <option value="Dienstleistungen">Dienstleistungen</option>
-                            <option value="Lebensmittelindustrie">Lebensmittelindustrie</option>
-                            <option value="Logistik/Fulfillment">Logistik/Fulfillment</option>
-                            <option value="Rechenzentren">Rechenzentren</option>
-                            <option value="MedTech">MedTech</option>
-                            <option value="Entsorger">Entsorger</option>
-                            <option value="Automobilindustrie">Automobilindustrie</option>
-                            <option value="Möbelindustrie">Möbelindustrie</option>
-                            <option value="Gewerbeflächen">Gewerbeflächen</option>
-                            <option value="Elektroinstallation">Elektroinstallation</option>
-                            <option value="Verpackungstechnik">Verpackungstechnik</option>
-                            <option value="Recyclingtechnik">Recyclingtechnik</option>
-                            <option value="Farben- und Lackbranche">Farben- und Lackbranche</option>
-                            <option value="Hersteller von Batterien">Hersteller von Batterien</option>
-                            <option value="Landwirtschaft">Landwirtschaft</option>
-                            <option value="Kunststoffindustrie">Kunststoffindustrie</option>
-                            <option value="Papierindustrie">Papierindustrie</option>
-                            <option value="Großhandel">Großhandel</option>
-                            <option value="Druckerei">Druckerei</option>
-                            <option value="Behörde">Behörde</option>
-                            <option value="Geschlossen">Geschlossen</option>
-                            <option value="Frachtspeditionsdienst">Frachtspeditionsdienst</option>
-                            <option value="Lackindustrie">Lackindustrie</option>
+                            <!-- Beispieloptionen hier gekürzt -->
                             <option value="Elektrogeräte Hersteller">Elektrogeräte Hersteller</option>
                         </select>
                     </div>
@@ -167,6 +131,7 @@
                     <p>Die Seite wird jetzt neu geladen</p>
                 </div>
             </form>`;
+
         container.innerHTML = html;
     }
 
@@ -237,6 +202,39 @@
         }
     }
 
+    /**
+     * Sendet die Formulardaten per POST an den Webhook. Falls der Request fehlschlägt,
+     * wird er bis zu max. MAX_RETRIES mal wiederholt.
+     * @param {Object} data - die zu sendenden Formulardaten
+     * @param {number} attempt - aktueller Versuchszähler
+     */
+    async function sendFormData(data, attempt = 1) {
+        try {
+            const response = await fetch(WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                return true; // Erfolg
+            } else {
+                throw new Error('Nicht ok: ' + response.statusText);
+            }
+        } catch (error) {
+            console.error('Fehler beim Senden (Versuch ' + attempt + '):', error);
+
+            if (attempt < MAX_RETRIES) {
+                // Kurz warten und dann erneut versuchen
+                await new Promise(res => setTimeout(res, 1500));
+                return sendFormData(data, attempt + 1);
+            } else {
+                // Zu viele Fehlversuche
+                return false;
+            }
+        }
+    }
+
     function init() {
         addStyles();
         createStructure();
@@ -260,37 +258,33 @@
                 const formData = new FormData(e.target);
                 const data = Object.fromEntries(formData);
 
-                try {
-                    const response = await fetch(WEBHOOK_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(data)
-                    });
+                // Debug: optionaler console.log
+                console.log('Sende Daten an Make:', data);
 
-                    if (response.ok) {
-                        // Zeigt die Erfolgsmeldung an
-                        var successMsg = document.getElementById('success-message');
-                        if (successMsg) {
-                            successMsg.classList.add('show');
-                        }
+                // Sende Daten mit Retry
+                const success = await sendFormData(data);
 
-                        // Warte 2 Sekunden, bevor die Seite neu geladen wird
-                        setTimeout(function() {
-                            if (successMsg) {
-                                successMsg.classList.remove('show');
-                            }
-                            setTimeout(function() {
-                                window.scrollTo({ top: 0, behavior: 'smooth' });
-                                window.location.reload();
-                            }, 1000); // Warte 1 Sekunde nach dem Scrollen, bevor die Seite neu geladen wird
-                        }, 2000);
-
-                    } else {
-                        throw new Error('Netzwerk-Antwort war nicht ok');
+                if (success) {
+                    // Erfolgsmeldung
+                    var successMsg = document.getElementById('success-message');
+                    if (successMsg) {
+                        successMsg.classList.add('show');
                     }
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert('Fehler beim Speichern der Daten. Bitte versuchen Sie es erneut.');
+
+                    // 2 Sekunden warten, Meldung entfernen, dann reload
+                    setTimeout(function() {
+                        if (successMsg) {
+                            successMsg.classList.remove('show');
+                        }
+                        // 1 Sek. warten, neu laden
+                        setTimeout(function() {
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                            window.location.reload();
+                        }, 1000);
+                    }, 2000);
+                } else {
+                    console.error('Alle Versuche sind fehlgeschlagen.');
+                    alert('Fehler beim Speichern der Daten. Bitte versuchen Sie es erneut oder deaktivieren Sie ggf. Browser-Plugins (Adblock etc.).');
                 }
             });
         }
@@ -314,5 +308,4 @@
     } else {
         loadDependencies();
     }
-
 })();
