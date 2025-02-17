@@ -129,8 +129,45 @@
                     <input type="text" class="ios-input required" name="firma" placeholder="Firma*" required>
                     <select class="ios-input required" name="branche" required>
                         <option value="">Branche wählen*</option>
-                        <!-- Beispieloptionen hier gekürzt -->
-                        <option value="Elektrogeräte Hersteller">Elektrogeräte Hersteller</option>
+                            <option value="Glashersteller">Glashersteller</option>
+                            <option value="Investmentfirma">Investmentfirma</option>
+                            <option value="Sporthalle">Sporthalle</option>
+                            <option value="Privatperson">Privatperson</option>
+                            <option value="Stadien">Stadien</option>
+                            <option value="Brauerei">Brauerei</option>
+                            <option value="Isoliertechnik">Isoliertechnik</option>
+                            <option value="Vermögensverwaltung">Vermögensverwaltung</option>
+                            <option value="Spedition">Spedition</option>
+                            <option value="Bauprojektentwickler">Bauprojektentwickler</option>
+                            <option value="Textilindustrie">Textilindustrie</option>
+                            <option value="Maschinenbauunternehmen">Maschinenbauunternehmen</option>
+                            <option value="Metallindustrie">Metallindustrie</option>
+                            <option value="Immobilien">Immobilien</option>
+                            <option value="Elektroindustrie">Elektroindustrie</option>
+                            <option value="Dienstleistungen">Dienstleistungen</option>
+                            <option value="Lebensmittelindustrie">Lebensmittelindustrie</option>
+                            <option value="Logistik/Fulfillment">Logistik/Fulfillment</option>
+                            <option value="Rechenzentren">Rechenzentren</option>
+                            <option value="MedTech">MedTech</option>
+                            <option value="Entsorger">Entsorger</option>
+                            <option value="Automobilindustrie">Automobilindustrie</option>
+                            <option value="Möbelindustrie">Möbelindustrie</option>
+                            <option value="Gewerbeflächen">Gewerbeflächen</option>
+                            <option value="Elektroinstallation">Elektroinstallation</option>
+                            <option value="Verpackungstechnik">Verpackungstechnik</option>
+                            <option value="Recyclingtechnik">Recyclingtechnik</option>
+                            <option value="Farben- und Lackbranche">Farben- und Lackbranche</option>
+                            <option value="Hersteller von Batterien">Hersteller von Batterien</option>
+                            <option value="Landwirtschaft">Landwirtschaft</option>
+                            <option value="Kunststoffindustrie">Kunststoffindustrie</option>
+                            <option value="Papierindustrie">Papierindustrie</option>
+                            <option value="Großhandel">Großhandel</option>
+                            <option value="Druckerei">Druckerei</option>
+                            <option value="Behörde">Behörde</option>
+                            <option value="Geschlossen">Geschlossen</option>
+                            <option value="Frachtspeditionsdienst">Frachtspeditionsdienst</option>
+                            <option value="Lackindustrie">Lackindustrie</option>
+                            <option value="Elektrogeräte Hersteller">Elektrogeräte Hersteller</option>
                     </select>
                 </div>
             </div>
