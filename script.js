@@ -421,4 +421,20 @@
     } else {
         loadDependencies();
     }
+    
+    // Sobald ein Termin bei Calendly gebucht wurde, Formular anzeigen
+    window.addEventListener('message', function(e) {
+        if (e.data.event && e.data.event === 'calendly.event_scheduled') {
+            console.log('✅ Termin gebucht – Formular wird sichtbar.');
+    
+            const form = document.getElementById('contact-form');
+            if (form) {
+                form.style.display = 'block';
+                setTimeout(() => {
+                    form.style.opacity = '1';
+                }, 10);
+            }
+        }
+    });
 })();
+
