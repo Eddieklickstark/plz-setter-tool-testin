@@ -81,6 +81,9 @@
         </div>
 
         <h3 class="subsection-header">Schritt 2 - Daten eintragen</h3>
+        <p id="form-hint" style="background: #fff8db; border: 1px solid #fcd34d; padding: 12px; border-radius: 8px; color: #92400e; font-size: 14px; margin-bottom: 24px;">
+        Das Formular wird sichtbar, sobald ein Termin über Calendly gebucht wurde.
+        </p>
         <form id="contact-form" class="form-section">
             <h2 class="section-header">Kontaktinformationen</h2>
             <input type="hidden" id="bundesland-hidden" name="bundesland" value="">
@@ -434,11 +437,17 @@
             console.log('✅ Termin gebucht – Formular wird sichtbar.');
     
             const form = document.getElementById('contact-form');
+            const hint = document.getElementById('form-hint');
+    
             if (form) {
                 form.style.display = 'block';
                 setTimeout(() => {
                     form.style.opacity = '1';
                 }, 10);
+            }
+    
+            if (hint) {
+                hint.style.display = 'none';
             }
         }
     });
