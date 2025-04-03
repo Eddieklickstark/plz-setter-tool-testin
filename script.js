@@ -212,6 +212,12 @@
         </div>
         `;
         container.innerHTML = html;
+            // Formular (Schritt 2) initial ausblenden
+        const form = document.getElementById('contact-form');
+        if (form) {
+            form.style.display = 'none';
+            form.style.opacity = '0';
+        }
     }
 
     function updateBundeslandSelect() {
