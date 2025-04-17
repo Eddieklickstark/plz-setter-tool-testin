@@ -364,52 +364,52 @@
         }
     }
 
-    function init() {
-        addStyles();
-        createStructure();
-        loadAEData();
-
-        var bundeslandSelect = document.getElementById('bundesland-select');
-        if (bundeslandSelect) {
-            bundeslandSelect.addEventListener('change', function() {
-                var selectedBundesland = this.value;
-                document.getElementById('bundesland-hidden').value = selectedBundesland;
-                if (selectedBundesland) {
-                    updateUI(aeMapping[selectedBundesland], selectedBundesland);
-                }
-            });
-        }
-
-        var form = document.getElementById('contact-form');
+        function init() {
+            addStyles();
+            createStructure();
+            loadAEData();
+    
+            var bundeslandSelect = document.getElementById('bundesland-select');
+            if (bundeslandSelect) {
+                bundeslandSelect.addEventListener('change', function() {
+                    var selectedBundesland = this.value;
+                    document.getElementById('bundesland-hidden').value = selectedBundesland;
+                    if (selectedBundesland) {
+                        updateUI(aeMapping[selectedBundesland], selectedBundesland);
+                    }
+                });
+            }
+    
+                var form = document.getElementById('contact-form');
         if (form) {
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
-
+    
                 // Submit-Button deaktivieren
                 var submitBtn = form.querySelector('.ios-submit');
                 if (submitBtn) {
                     submitBtn.disabled = true;
                 }
-
+    
                 // Lade-Overlay anzeigen
                 showLoadingOverlay();
-
+    
                 const formData = new FormData(e.target);
                 const data = Object.fromEntries(formData);
-
+    
                 console.log('Sende Daten an Make:', data);
-
+    
                 const success = await sendFormData(data);
-
+    
                 // Lade-Overlay ausblenden
                 hideLoadingOverlay();
-
+    
                 if (success) {
                     var successMsg = document.getElementById('success-message');
                     if (successMsg) {
                         successMsg.classList.add('show');
                     }
-
+    
                     // 2 Sekunden warten, Meldung entfernen, dann reload
                     setTimeout(function() {
                         if (successMsg) {
@@ -432,7 +432,26 @@
                 }
             });
         }
-    }
+    
+        // ─── GLOBALER CALENDLY‑LISTENER ───
+        window.addEventListener('message', function(e) {
+            if (e.data.event === 'calendly.event_scheduled') {
+                // 1. E‑Mail holen
+                var email = e.data.payload?.invitee?.email;
+                // 2. Feld befüllen
+                var emailInput = document.getElementById('email-field');
+                if (emailInput && email) emailInput.value = email;
+                // 3. Formular anzeigen
+                var form = document.getElementById('contact-form');
+                var hint = document.getElementById('form-hint');
+                if (form) {
+                    form.style.display = 'block';
+                    setTimeout(() => form.style.opacity = '1', 10);
+                }
+                if (hint) hint.style.display = 'none';
+            }
+        });
+    }  // <-- schließt hier deine init()-Funktion
 
     function loadDependencies() {
         var papaScript = document.createElement('script');
