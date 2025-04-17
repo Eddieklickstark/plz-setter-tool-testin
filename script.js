@@ -187,7 +187,7 @@
                     <input type="text" class="ios-input required" name="vorname" placeholder="Vorname*" required>
                     <input type="text" class="ios-input required" name="nachname" placeholder="Nachname*" required>
                     <input type="text" class="ios-input required" name="position" placeholder="Position*" required>
-                    <input type="email" class="ios-input required" name="email" placeholder="E-Mail*" required>
+                    <input type="email" id="email-field" class="ios-input required" name="email" placeholder="E-Mail*" required>
                     <input type="tel" class="ios-input required" name="festnetz" placeholder="Festnetznummer* - Nur Zahlen!" required>
                     <input type="tel" class="ios-input" name="mobil" placeholder="Mobil - Nur Zahlen!">
                     <input type="url" class="ios-input" name="linkedin" placeholder="LinkedIn Profil: https://www.linkedin.com/in/beispiel" style="grid-column: span 2;">
