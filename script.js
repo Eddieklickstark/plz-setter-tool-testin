@@ -431,38 +431,28 @@
         loadDependencies();
     }
     
-    // Sobald ein Termin bei Calendly gebucht wurde, Formular anzeigen
     window.addEventListener('message', function(e) {
-        // Prüfen, ob das Event von Calendly stammt und ein Termin gebucht wurde
-        if (e.data.event && e.data.event === 'calendly.event_scheduled') {
+        if (e.data.event === 'calendly.event_scheduled') {
             console.log('✅ Termin gebucht – Formular wird sichtbar.');
     
-            // Email aus dem Calendly-Payload auslesen
-            var calendlyData = e.data.payload;
-            var email = calendlyData && calendlyData.invitee && calendlyData.invitee.email;
-    
+            // 1. Email aus dem Calendly-Payload holen
+            var email = e.data.payload?.invitee?.email;
             if (email) {
-                // Suche das E-Mail-Feld im Formular und setze den Wert
-                var emailInput = document.querySelector('input[name="email"]');
+                // 2. Gezielt das Feld mit ID "email-field" ansteuern
+                var emailInput = document.getElementById('email-field');
                 if (emailInput) {
                     emailInput.value = email;
                 }
             }
     
-            // Formular sichtbar machen
+            // 3. Erst jetzt das Formular anzeigen
             const form = document.getElementById('contact-form');
             const hint = document.getElementById('form-hint');
-    
             if (form) {
                 form.style.display = 'block';
-                setTimeout(() => {
-                    form.style.opacity = '1';
-                }, 10);
+                setTimeout(() => form.style.opacity = '1', 10);
             }
-    
-            if (hint) {
-                hint.style.display = 'none';
-            }
+            if (hint) hint.style.display = 'none';
         }
     });
 })();
