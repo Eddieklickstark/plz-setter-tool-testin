@@ -5,24 +5,27 @@
     var bundeslaender = [];
     var MAX_RETRIES = 3;
 
+    // ... (kompletter Code unverändert bis updateUI)
+
     function updateUI(ae, bundesland) {
         var resultDiv = document.getElementById('ae-result');
         var calendlyDiv = document.getElementById('calendly-container');
         if (!resultDiv || !calendlyDiv) return;
 
         if (ae) {
-            resultDiv.innerHTML = `
-                <div class="ae-info">
-                    <div class="ae-title"><p>Zuständiger Account Executive für ${bundesland}</p></div>
-                    <div class="ae-details"><p><strong>Name:</strong> ${ae.name}</p></div>
-                </div>
-            `;
+            resultDiv.innerHTML = '<div class="ae-info">' +
+                '<div class="ae-title"><p>Zuständiger Account Executive für ' + bundesland + '</p></div>' +
+                '<div class="ae-details"><p><strong>Name:</strong> ' + ae.name + '</p></div>' +
+            '</div>';
 
-            calendlyDiv.innerHTML = '';
+            calendlyDiv.innerHTML = '<div class="calendly-inline-widget" ' +
+                'data-url="' + ae.calendlyLink + '?hide_event_type_details=1&hide_landing_page_details=1&background_color=ffffff&hide_title=1" ' +
+                'style="min-width:320px;height:700px;"></div>';
+
             if (window.Calendly) {
-                Calendly.initInlineWidget({
+                window.Calendly.initInlineWidget({
                     url: ae.calendlyLink + '?hide_event_type_details=1&hide_landing_page_details=1&background_color=ffffff&hide_title=1',
-                    parentElement: calendlyDiv
+                    parentElement: calendlyDiv.querySelector('.calendly-inline-widget')
                 });
             }
         } else {
@@ -30,6 +33,7 @@
         }
     }
 
+    // Event-Listener für calendly.event_scheduled
     window.addEventListener('message', function(e) {
         if (e.origin !== 'https://calendly.com') return;
         if (e.data.event === 'calendly.event_scheduled') {
@@ -59,116 +63,7 @@
         }
     });
 
-    function loadAEData() {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', SHEET_URL, true);
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                Papa.parse(xhr.responseText, {
-                    header: true,
-                    skipEmptyLines: true,
-                    complete: function(results) {
-                        aeMapping = {};
-                        bundeslaender = [];
-                        results.data.forEach(function(row) {
-                            if (row.Bundesland && row.name) {
-                                var bl = row.Bundesland.trim();
-                                aeMapping[bl] = {
-                                    name: row.name.trim(),
-                                    calendlyLink: row.calendly_link ? row.calendly_link.trim() : ''
-                                };
-                                if (!bundeslaender.includes(bl)) {
-                                    bundeslaender.push(bl);
-                                }
-                            }
-                        });
-                        updateBundeslandSelect();
-                    }
-                });
-            }
-        };
-        xhr.send();
-    }
-
-    function updateBundeslandSelect() {
-        var select = document.getElementById('bundesland-select');
-        if (!select) return;
-        select.innerHTML = '<option value="">Bundesland wählen...</option>';
-        bundeslaender.forEach(function(bundesland) {
-            select.innerHTML += '<option value="' + bundesland + '">' + bundesland + '</option>';
-        });
-    }
-
-    async function sendFormData(data, attempt = 1) {
-        try {
-            const response = await fetch(WEBHOOK_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-
-            if (response.ok) return true;
-            else throw new Error('Nicht ok: ' + response.statusText);
-        } catch (error) {
-            console.error('Fehler beim Senden (Versuch ' + attempt + '):', error);
-            if (attempt < MAX_RETRIES) {
-                await new Promise(res => setTimeout(res, 1500));
-                return sendFormData(data, attempt + 1);
-            } else {
-                return false;
-            }
-        }
-    }
-
-    function showLoadingOverlay() {
-        var overlay = document.getElementById('loading-overlay');
-        if (overlay) overlay.classList.add('show');
-    }
-
-    function hideLoadingOverlay() {
-        var overlay = document.getElementById('loading-overlay');
-        if (overlay) overlay.classList.remove('show');
-    }
-
-    function init() {
-        loadAEData();
-
-        const waitForElements = setInterval(() => {
-            const form = document.getElementById('contact-form');
-            const select = document.getElementById('bundesland-select');
-            if (form && select) {
-                clearInterval(waitForElements);
-
-                select.addEventListener('change', function() {
-                    const selected = this.value;
-                    document.getElementById('bundesland-hidden').value = selected;
-                    if (selected) updateUI(aeMapping[selected], selected);
-                });
-
-                form.addEventListener('submit', async function(e) {
-                    e.preventDefault();
-                    const submitBtn = form.querySelector('.ios-submit');
-                    if (submitBtn) submitBtn.disabled = true;
-                    showLoadingOverlay();
-
-                    const formData = new FormData(form);
-                    const data = Object.fromEntries(formData.entries());
-
-                    const success = await sendFormData(data);
-                    hideLoadingOverlay();
-
-                    if (success) {
-                        var msg = document.getElementById('success-message');
-                        if (msg) msg.classList.add('show');
-                        setTimeout(() => window.location.reload(), 3000);
-                    } else {
-                        alert('Fehler beim Speichern der Daten.');
-                        if (submitBtn) submitBtn.disabled = false;
-                    }
-                });
-            }
-        }, 100);
-    }
+    // ... (Rest bleibt exakt gleich wie dein Code inkl. init, loadAEData, sendFormData, etc.)
 
     function loadDependencies() {
         var papaScript = document.createElement('script');
