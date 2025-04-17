@@ -282,8 +282,30 @@
 
                 if (window.Calendly) {
                     window.Calendly.initInlineWidget({
-                        url: ae.calendlyLink + '?hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1&background_color=ffffff&hide_title=1',
-                        parentElement: calendlyDiv.querySelector('.calendly-inline-widget')
+                        url: ae.calendlyLink +
+                             '?hide_gdpr_banner=1' +
+                             '&hide_event_type_details=1' +
+                             '&hide_landing_page_details=1' +
+                             '&background_color=ffffff' +
+                             '&hide_title=1',
+                        parentElement: calendlyDiv.querySelector('.calendly-inline-widget'),
+                        onEventScheduled: function(e) {
+                            // 1. E‑Mail aus Calendly‑Payload holen
+                            var email = e.data.payload?.invitee?.email;
+                            if (email) {
+                                // 2. Dein E‑Mail‑Feld füllen
+                                var emailInput = document.getElementById('email-field');
+                                if (emailInput) emailInput.value = email;
+                            }
+                            // 3. Formular anzeigen
+                            var form = document.getElementById('contact-form');
+                            var hint = document.getElementById('form-hint');
+                            if (form) {
+                                form.style.display = 'block';
+                                setTimeout(() => form.style.opacity = '1', 10);
+                            }
+                            if (hint) hint.style.display = 'none';
+                        }
                     });
                 }
             } else {
