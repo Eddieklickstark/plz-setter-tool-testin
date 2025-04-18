@@ -1,14 +1,14 @@
 (function() {
-    var SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR8BRATZeyiaD0NMh00CWU1bJYZA2XRYA3jrd_XRLg-wWV9UEh9hD___JLuiFZT8nalLamjKMJyc3MJ/pub?gid=0&single=true&output=csv';
-    var WEBHOOK_URL = 'https://hook.eu2.make.com/t9xvbefzv5i8sjcr7u8tiyvau7t1wnlw';
-    var aeMapping = {};
-    var bundeslaender = [];
-    var MAX_RETRIES = 3;
+  const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR8BRATZeyiaD0NMh00CWU1bJYZA2XRYA3jrd_XRLg-wWV9hD___JLuiFZT8nalLamjKMJyc3MJ/pub?gid=0&single=true&output=csv';
+  const WEBHOOK_URL = 'https://hook.eu2.make.com/t9xvbefzv5i8sjcr7u8tiyvau7t1wnlw';
+  const MAX_RETRIES = 3;
+  let aeMapping = {};
+  let bundeslaender = [];
 
-    function addStyles() {
-        var css = document.createElement('style');
-        css.type = 'text/css';
-        css.innerHTML = `
+  function addStyles() {
+    const css = document.createElement('style');
+    css.type = 'text/css';
+    css.innerHTML = `
 .setter-tool { max-width: 800px; margin: 0 auto; padding: 2rem; border-radius: 2rem; font-family: figtree, sans-serif; }
 .section-header { font-size: 22px; color: #111827; margin-bottom: 16px; font-weight: 600; padding-bottom: 8px; border-bottom: 1px solid #E5E7EB; }
 .subsection-header { font-size: 18px; color: #374151; margin: 16px 0; font-weight: 500; }
@@ -34,13 +34,13 @@
 .spinner { width: 50px; height: 50px; border: 6px solid #f3f3f3; border-top: 6px solid #046C4E; border-radius: 50%; animation: spin 1s linear infinite; }
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 `;
-        document.head.appendChild(css);
-    }
+    document.head.appendChild(css);
+  }
 
-    function createStructure() {
-        var container = document.querySelector('.setter-tool');
-        if (!container) return;
-        container.innerHTML = `
+  function createStructure() {
+    const container = document.querySelector('.setter-tool');
+    if (!container) return;
+    container.innerHTML = `
 <div class="bundesland-section">
   <h2 class="section-header">Terminbuchung</h2>
   <h3 class="subsection-header">Schritt 1 - Calendly Termin buchen</h3>
@@ -168,169 +168,156 @@
   <div class="success-message" id="success-message"><p>Daten wurden erfolgreich gespeichert!</p><p>Die Seite wird jetzt neu geladen</p></div>
 </form>
 <div class="overlay" id="loading-overlay"><div class="spinner"></div></div>
-        `;
-        var form = document.getElementById('contact-form');
-        if (form) {
-            form.style.display = 'none';
-            form.style.opacity = '0';
-        }
+    `;
+    const form = document.getElementById('contact-form');
+    if (form) {
+      form.style.display = 'none';
+      form.style.opacity = '0';
     }
+  }
 
-    function updateBundeslandSelect() {
-        var select = document.getElementById('bundesland-select');
-        if (!select) return;
-        select.innerHTML = '<option value="">Bundesland wählen...</option>';
-        bundeslaender.forEach(function(bl) {
-            select.innerHTML += '<option value="' + bl + '">' + bl + '</option>';
+  function updateBundeslandSelect() {
+    const select = document.getElementById('bundesland-select');
+    if (!select) return;
+    select.innerHTML = '<option value="">Bundesland wählen...</option>';
+    bundeslaender.forEach(bl => {
+      select.innerHTML += `<option value="${bl}">${bl}</option>`;
+    });
+  }
+
+  function loadAEData() {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', SHEET_URL, true);
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        Papa.parse(xhr.responseText, {
+          header: true,
+          skipEmptyLines: true,
+          complete: results => {
+            aeMapping = {};
+            bundeslaender = [];
+            results.data.forEach(row => {
+              if (row.Bundesland && row.name) {
+                const bl = row.Bundesland.trim();
+                aeMapping[bl] = {
+                  name: row.name.trim(),
+                  calendlyLink: (row.calendly_link || '').trim()
+                };
+                if (!bundeslaender.includes(bl)) bundeslaender.push(bl);
+              }
+            });
+            updateBundeslandSelect();
+          }
         });
-    }
+      }
+    };
+    xhr.send();
+  }
 
-    function loadAEData() {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', SHEET_URL, true);
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                Papa.parse(xhr.responseText, {
-                    header: true,
-                    skipEmptyLines: true,
-                    complete: function(results) {
-                        aeMapping = {};
-                        bundeslaender = [];
-                        results.data.forEach(function(row) {
-                            if (row.Bundesland && row.name) {
-                                var bl = row.Bundesland.trim();
-                                aeMapping[bl] = {
-                                    name: row.name.trim(),
-                                    calendlyLink: (row.calendly_link || '').trim()
-                                };
-                                if (bundeslaender.indexOf(bl) === -1) bundeslaender.push(bl);
-                            }
-                        });
-                        updateBundeslandSelect();
-                    }
-                });
-            }
-        };
-        xhr.send();
-    }
-
-    function updateUI(ae, bl) {
-        var res = document.getElementById('ae-result'),
-            cal = document.getElementById('calendly-container');
-        if (!res || !cal) return;
-        if (ae && ae.calendlyLink) {
-            res.innerHTML = '<div class="ae-info"><p><strong>Zuständig für ' + bl + ':</strong> ' + ae.name + '</p></div>';
-            cal.innerHTML = '<div class="calendly-inline-widget" data-url="' + ae.calendlyLink + '?hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1&background_color=ffffff&hide_title=1" style="min-width:320px;height:700px;"></div>';
-            if (window.Calendly) {
-                window.Calendly.initInlineWidget({
-                    url: ae.calendlyLink + '?hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1&background_color=ffffff&hide_title=1',
-                    parentElement: cal.querySelector('.calendly-inline-widget')
-                });
-            }
-        } else {
-            cal.innerHTML = '<div class="calendly-placeholder">Bitte zuerst ein Bundesland wählen.</div>';
+  function updateUI(ae, bl) {
+    const res = document.getElementById('ae-result');
+    const cal = document.getElementById('calendly-container');
+    if (!res || !cal) return;
+    if (ae && ae.calendlyLink) {
+      res.innerHTML = `<div class="ae-info"><p><strong>Zuständig für ${bl}:</strong> ${ae.name}</p></div>`;
+      cal.innerHTML = `<div class="calendly-inline-widget" data-url="${ae.calendlyLink}?hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1&background_color=ffffff&hide_title=1" style="min-width:320px;height:700px;"></div>`;
+      window.Calendly.initInlineWidget({
+        url: ae.calendlyLink + '?hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1&background_color=ffffff&hide_title=1',
+        parentElement: cal.querySelector('.calendly-inline-widget'),
+        onEventScheduled: e => {
+          const email = e.data.payload?.invitee?.email;
+          if (email) document.getElementById('email-field').value = email;
+          const form = document.getElementById('contact-form'),
+                hint = document.getElementById('form-hint');
+          form.style.display = 'block';
+          setTimeout(() => form.style.opacity = '1', 10);
+          hint.style.display = 'none';
         }
-    }
-
-    async function sendFormData(data, attempt) {
-        attempt = attempt || 1;
-        try {
-            var resp = await fetch(WEBHOOK_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-            return resp.ok;
-        } catch (err) {
-            if (attempt < MAX_RETRIES) {
-                await new Promise(r => setTimeout(r, 1500));
-                return sendFormData(data, attempt + 1);
-            }
-            return false;
-        }
-    }
-
-    function showLoadingOverlay() {
-        document.getElementById('loading-overlay').classList.add('show');
-    }
-
-    function hideLoadingOverlay() {
-        document.getElementById('loading-overlay').classList.remove('show');
-    }
-
-    function init() {
-        addStyles();
-        createStructure();
-        loadAEData();
-
-        var select = document.getElementById('bundesland-select');
-        if (select) {
-            select.addEventListener('change', function() {
-                var v = this.value;
-                document.getElementById('bundesland-hidden').value = v;
-                if (v) updateUI(aeMapping[v], v);
-            });
-        }
-
-        var form = document.getElementById('contact-form');
-        if (form) {
-            form.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                var btn = form.querySelector('.ios-submit');
-                if (btn) btn.disabled = true;
-                showLoadingOverlay();
-                var data = Object.fromEntries(new FormData(form).entries());
-                var ok = await sendFormData(data);
-                hideLoadingOverlay();
-                if (ok) {
-                    var msg = document.getElementById('success-message');
-                    if (msg) msg.classList.add('show');
-                    setTimeout(function() {
-                        msg.classList.remove('show');
-                        setTimeout(function() {
-                            window.scrollTo({ top: 0, behavior: 'smooth' });
-                            window.location.reload();
-                        }, 1000);
-                    }, 2000);
-                } else {
-                    alert('Fehler beim Speichern. Bitte erneut versuchen.');
-                    if (btn) btn.disabled = false;
-                }
-            });
-        }
-
-        window.addEventListener('message', function(e) {
-            if (e.data.event === 'calendly.event_scheduled') {
-                var email = e.data.payload?.invitee?.email;
-                if (email) {
-                    var inp = document.getElementById('email-field');
-                    if (inp) inp.value = email;
-                }
-                var f = document.getElementById('contact-form'),
-                    h = document.getElementById('form-hint');
-                if (f) { f.style.display = 'block'; setTimeout(() => f.style.opacity = '1', 10); }
-                if (h) h.style.display = 'none';
-            }
-        });
-    }
-
-    function loadDependencies() {
-        var p = document.createElement('script');
-        p.src = 'https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js';
-        p.onload = function() {
-            var c = document.createElement('script');
-            c.src = 'https://assets.calendly.com/assets/external/widget.js';
-            c.async = true;
-            c.onload = init;
-            document.head.appendChild(c);
-        };
-        document.head.appendChild(p);
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', loadDependencies);
+      });
     } else {
-        loadDependencies();
+      cal.innerHTML = '<div class="calendly-placeholder">Bitte zuerst ein Bundesland wählen.</div>';
     }
+  }
 
+  async function sendFormData(data, attempt = 1) {
+    try {
+      const resp = await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      return resp.ok;
+    } catch (err) {
+      if (attempt < MAX_RETRIES) {
+        await new Promise(r => setTimeout(r, 1500));
+        return sendFormData(data, attempt + 1);
+      }
+      return false;
+    }
+  }
+
+  function showLoadingOverlay() {
+    document.getElementById('loading-overlay').classList.add('show');
+  }
+  function hideLoadingOverlay() {
+    document.getElementById('loading-overlay').classList.remove('show');
+  }
+
+  function init() {
+    addStyles();
+    createStructure();
+    loadAEData();
+
+    document.getElementById('bundesland-select')?.addEventListener('change', function() {
+      const v = this.value;
+      document.getElementById('bundesland-hidden').value = v;
+      if (v) updateUI(aeMapping[v], v);
+    });
+
+    const form = document.getElementById('contact-form');
+    form?.addEventListener('submit', async e => {
+      e.preventDefault();
+      const btn = form.querySelector('.ios-submit');
+      btn.disabled = true;
+      showLoadingOverlay();
+      const data = Object.fromEntries(new FormData(form).entries());
+      const ok = await sendFormData(data);
+      hideLoadingOverlay();
+      if (ok) {
+        const msg = document.getElementById('success-message');
+        msg.classList.add('show');
+        setTimeout(() => {
+          msg.classList.remove('show');
+          setTimeout(() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.location.reload();
+          }, 1000);
+        }, 2000);
+      } else {
+        alert('Fehler beim Speichern. Bitte erneut versuchen.');
+        btn.disabled = false;
+      }
+    });
+  }
+
+  function loadDependencies() {
+    const p = document.createElement('script');
+    p.src = 'https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js';
+    p.onload = () => {
+      const c = document.createElement('script');
+      c.src = 'https://assets.calendly.com/assets/external/widget.js';
+      c.async = true;
+      c.onload = init;
+      c.onerror = () => console.error('Calendly failed to load');
+      document.head.appendChild(c);
+    };
+    p.onerror = () => console.error('PapaParse failed to load');
+    document.head.appendChild(p);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadDependencies);
+  } else {
+    loadDependencies();
+  }
 })();
