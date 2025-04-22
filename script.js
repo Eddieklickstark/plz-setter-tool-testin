@@ -11,6 +11,11 @@
     var formSubmitted = false;
     var exitIntentShown = false;
 
+    // WICHTIG: Bei jedem Seitenaufruf den Status zurücksetzen
+    localStorage.removeItem('calendlyBooked');
+    localStorage.removeItem('formSubmitted');
+    localStorage.removeItem('exitIntentShown');
+
     // Anzahl maximaler Versuche für POST-Request
     var MAX_RETRIES = 3;
 
@@ -472,26 +477,6 @@
         createStructure();
         loadAEData();
 
-        // Beim Laden der Seite Status wiederherstellen
-        if (localStorage.getItem('calendlyBooked') === 'true' && localStorage.getItem('formSubmitted') !== 'true') {
-            // Formular anzeigen
-            var form = document.getElementById('contact-form');
-            var hint = document.getElementById('form-hint');
-            
-            if (form) {
-                form.style.display = 'block';
-                setTimeout(() => {
-                    form.style.opacity = '1';
-                }, 10);
-            }
-            
-            if (hint) {
-                hint.style.display = 'none';
-            }
-            
-            // Exit Intent Tracking aktivieren
-            setupExitIntent();
-        }
 
         var bundeslandSelect = document.getElementById('bundesland-select');
         if (bundeslandSelect) {
