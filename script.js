@@ -62,7 +62,7 @@
     }
 
     function createStructure() {
-        var container = document.querySelector('.setter-tool');
+        var container = document.querySelector('.setter-tool-testing');
         if (!container) return;
 
         var html =
