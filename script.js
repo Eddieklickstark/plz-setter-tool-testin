@@ -1,5 +1,3 @@
-// So sollte die finale script.js aussehen
-
 (function() {
     var SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR8BRATZeyiaD0NMh00CWU1bJYZA2XRYA3jrd_XRLg-wWV9UEh9hD___JLuiFZT8nalLamjKMJyc3MJ/pub?gid=0&single=true&output=csv';
     var WEBHOOK_URL = 'https://hook.eu2.make.com/zjrt2532r9uvwsudaqhs6p559lagfgww';
@@ -37,7 +35,7 @@
             /* Input Styles */
             '.ios-input { width: 100%; padding: 12px; border: 1px solid #E5E7EB; border-radius: 10px; font-size: 16px; background: #FAFAFA; }',
             '.ios-input:focus { outline: none; border-color: #046C4E; background: #FFFFFF; box-shadow: 0 0 0 3px rgba(4, 108, 78, 0.1); }',
-            '.ios-input[readonly] { background-color: #f0f9ff; border-color: #93c5fd; }',
+            '.ios-input[readonly] { background-color: #f0f9ff; border-color: #93c5fd; color: #1e40af; }',
 
             /* Calendly Placeholder & Container */
             '.calendly-placeholder { background: #F9FAFB; border: 2px dashed #E5E7EB; border-radius: 12px; padding: 40px; text-align: center; color: #6B7280; min-height: 400px; display: flex; align-items: center; justify-content: center; }',
@@ -81,7 +79,10 @@
             '.exit-intent-button-primary { background-color: #046C4E; color: white; padding: 12px 20px; border-radius: 8px; font-weight: 500; border: none; cursor: pointer; transition: background-color 0.2s; }',
             '.exit-intent-button-primary:hover { background-color: #065F46; }',
             '.exit-intent-button-secondary { background-color: #F3F4F6; color: #374151; padding: 12px 20px; border-radius: 8px; font-weight: 500; border: none; cursor: pointer; transition: background-color 0.2s; }',
-            '.exit-intent-button-secondary:hover { background-color: #E5E7EB; }'
+            '.exit-intent-button-secondary:hover { background-color: #E5E7EB; }',
+            
+            /* WICHTIG: Formular initial ausblenden */
+            '#contact-form { display: none; opacity: 0; transition: opacity 0.3s ease; }'
         ].join('\n');
         document.head.appendChild(css);
     }
@@ -240,9 +241,11 @@
         </div>
         `;
         container.innerHTML = html;
-            // Formular (Schritt 2) initial ausblenden
+        
+        // WICHTIG: Nochmal explizit das Formular ausblenden
         const form = document.getElementById('contact-form');
         if (form) {
+            console.log('📋 Formular initial ausgeblendet');
             form.style.display = 'none';
             form.style.opacity = '0';
         }
@@ -443,17 +446,6 @@
     function setupExitIntent() {
         console.log('🔍 Exit Intent Tracking aktiviert');
         
-        // Status wiederherstellen (falls Seite neu geladen wurde)
-        if (localStorage.getItem('calendlyBooked') === 'true') {
-            calendlyBooked = true;
-        }
-        if (localStorage.getItem('formSubmitted') === 'true') {
-            formSubmitted = true;
-        }
-        if (localStorage.getItem('exitIntentShown') === 'true') {
-            exitIntentShown = true;
-        }
-        
         // Exit Intent Erkennung: Mausbewegung nach oben/außerhalb
         document.addEventListener('mouseleave', function(e) {
             if (e.clientY <= 5) { // Wenn Maus den oberen Bereich verlässt
@@ -476,7 +468,15 @@
         addStyles();
         createStructure();
         loadAEData();
-
+        
+        // NOCHMAL EXPLIZIT SICHERSTELLEN, dass das Formular ausgeblendet ist
+        setTimeout(function() {
+            var form = document.getElementById('contact-form');
+            if (form) {
+                form.style.display = 'none';
+                form.style.opacity = '0';
+            }
+        }, 100);
 
         var bundeslandSelect = document.getElementById('bundesland-select');
         if (bundeslandSelect) {
@@ -566,10 +566,7 @@
         loadDependencies();
     }
     
-    // Sobald ein Termin bei Calendly gebucht wurde, Formular anzeigen
-    // Verbesserte E-Mail-Übertragungsfunktion
-    // Diese Funktion in Ihrem Code ersetzen oder ergänzen
-    
+    // Der einzige Event-Listener für Calendly-Events
     window.addEventListener('message', function(e) {
         // Prüfen, ob das Event von Calendly stammt und ein Termin gebucht wurde
         if (e.data.event && e.data.event === 'calendly.event_scheduled') {
@@ -577,8 +574,6 @@
             
             // Status auf "gebucht" setzen
             calendlyBooked = true;
-            // Status im localStorage speichern (für Seitenreloads)
-            localStorage.setItem('calendlyBooked', 'true');
             
             // Email aus dem Calendly-Payload auslesen
             var calendlyData = e.data.payload;
@@ -623,20 +618,20 @@
                 form.style.display = 'block';
                 setTimeout(() => {
                     form.style.opacity = '1';
-                }, 10);
-                
-                // Nach dem Anzeigen des Formulars nochmals versuchen, die E-Mail zu setzen
-                setTimeout(function() {
-                    var emailInput = document.querySelector('input[name="email"]');
-                    if (emailInput && email && !emailInput.value) {
-                        emailInput.value = email;
-                        emailInput.setAttribute('readonly', 'readonly');
-                        emailInput.style.backgroundColor = '#f0f9ff';
-                        emailInput.style.borderColor = '#93c5fd';
-                        emailInput.style.color = '#1e40af';
-                        console.log('🔄 Verzögerter E-Mail-Transfer durchgeführt');
+                    
+                    // Nach dem Anzeigen des Formulars nochmals versuchen, die E-Mail zu setzen
+                    if (email) {
+                        var emailInput = document.querySelector('input[name="email"]');
+                        if (emailInput && !emailInput.value) {
+                            emailInput.value = email;
+                            emailInput.setAttribute('readonly', 'readonly');
+                            emailInput.style.backgroundColor = '#f0f9ff';
+                            emailInput.style.borderColor = '#93c5fd';
+                            emailInput.style.color = '#1e40af';
+                            console.log('🔄 Verzögerter E-Mail-Transfer durchgeführt');
+                        }
                     }
-                }, 1500);
+                }, 100);
             }
             
             if (hint) {
