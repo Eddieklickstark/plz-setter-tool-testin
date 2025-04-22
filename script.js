@@ -567,117 +567,218 @@
     }
     
     // Der einzige Event-Listener für Calendly-Events
-        // Ersetzen Sie in Ihrer script.js den Calendly Event-Listener mit diesem Debug-Code:
-    
+// Ersetzen Sie den Calendly Event-Listener mit diesem einfacheren Code:
+
     window.addEventListener('message', function(e) {
-        // Allgemeines Event-Logging
-        console.log('🔔 Message Event erhalten:', e.data.event);
-        
-        // Vollständiges Logging aller Calendly-Events für Diagnose
-        if (e.data.event && e.data.event.indexOf('calendly') === 0) {
-            console.log('📆 Calendly Event:', e.data.event);
-            console.log('📦 Calendly Payload:', e.data.payload);
-        }
-        
-        // Prüfen, ob das Event von Calendly stammt und ein Termin gebucht wurde
         if (e.data.event && e.data.event === 'calendly.event_scheduled') {
-            console.log('✅ Termin gebucht – Formular wird sichtbar.');
+            console.log('✅ Termin gebucht – Debugging-Informationen:');
             
             // Status auf "gebucht" setzen
             calendlyBooked = true;
             
-            // DEBUGGING: Vollständige Payload untersuchen
-            console.log('🔍 DEBUG - Vollständige Calendly Payload:', JSON.stringify(e.data.payload, null, 2));
-            
-            // Email aus dem Calendly-Payload auslesen
-            var calendlyData = e.data.payload;
-            
-            // DEBUGGING: Invitee-Objekt prüfen
-            if (calendlyData && calendlyData.invitee) {
-                console.log('👤 DEBUG - Invitee Objekt:', JSON.stringify(calendlyData.invitee, null, 2));
-            } else {
-                console.warn('⚠️ DEBUG - Kein invitee-Objekt gefunden in:', calendlyData);
-            }
-            
-            var email = calendlyData && calendlyData.invitee && calendlyData.invitee.email;
-            
-            // DEBUGGING: E-Mail-Wert prüfen
-            console.log('📧 DEBUG - Extrahierte E-Mail:', email);
-            
-            // Alternative Wege zum Extrahieren der E-Mail versuchen
-            var emailAlt1 = calendlyData && calendlyData.invitee ? calendlyData.invitee.email : null;
-            var emailAlt2 = calendlyData && calendlyData.event ? calendlyData.event.email : null;
-            var emailAlt3 = calendlyData && calendlyData.tracking ? calendlyData.tracking.email : null;
-            
-            console.log('📧 DEBUG - Alternative E-Mail-Extraktionen:');
-            console.log('   - Alt1 (invitee.email):', emailAlt1);
-            console.log('   - Alt2 (event.email):', emailAlt2);
-            console.log('   - Alt3 (tracking.email):', emailAlt3);
-            
-            if (email) {
-                console.log('📧 E-Mail aus Calendly erfasst: ' + email);
+            try {
+                // Manuelle E-Mail-Extraktion mit detaillierter Fehlerbehandlung
+                console.log('📦 Vollständige Event-Daten:', e.data);
                 
-                // DEBUGGING: E-Mail-Input finden
-                var emailInput = document.querySelector('input[name="email"]');
-                console.log('🔍 DEBUG - E-Mail-Input-Element gefunden:', emailInput);
+                var emailFound = false;
+                var emailValue = null;
                 
-                if (emailInput) {
-                    // E-Mail in das Feld eintragen
-                    emailInput.value = email;
-                    console.log('✓ DEBUG - E-Mail-Wert gesetzt auf:', emailInput.value);
-                    
-                    // E-Mail-Feld als readonly markieren
-                    emailInput.setAttribute('readonly', 'readonly');
-                    console.log('✓ DEBUG - E-Mail-Feld auf readonly gesetzt');
-                    
-                    // Visuelles Feedback
-                    emailInput.style.backgroundColor = '#f0f9ff';
-                    emailInput.style.borderColor = '#93c5fd';
-                    emailInput.style.color = '#1e40af';
-                    console.log('✓ DEBUG - E-Mail-Feld-Styling angewendet');
+                // Versuch 1: Direkte Extraktion
+                if (e.data.payload && e.data.payload.invitee && e.data.payload.invitee.email) {
+                    emailValue = e.data.payload.invitee.email;
+                    emailFound = true;
+                    console.log('✓ E-Mail in payload.invitee.email gefunden:', emailValue);
                 } else {
-                    console.warn('⚠️ DEBUG - E-Mail-Feld nicht gefunden. Alle Formular-Elemente:');
-                    const allInputs = document.querySelectorAll('input');
-                    allInputs.forEach((input, i) => {
-                        console.log(`Input ${i}:`, input.name, input);
-                    });
+                    console.log('✗ E-Mail nicht in payload.invitee.email gefunden');
                 }
-            } else {
-                console.warn('⚠️ DEBUG - Keine E-Mail in Calendly-Daten gefunden');
-            }
-            
-            // Formular sichtbar machen
-            const form = document.getElementById('contact-form');
-            const hint = document.getElementById('form-hint');
-            
-            if (form) {
-                console.log('📋 DEBUG - Formular gefunden, wird angezeigt');
-                form.style.display = 'block';
-                setTimeout(() => {
-                    form.style.opacity = '1';
+                
+                // Versuch 2: Extraktion aus event
+                if (!emailFound && e.data.payload && e.data.payload.event && e.data.payload.event.email) {
+                    emailValue = e.data.payload.event.email;
+                    emailFound = true;
+                    console.log('✓ E-Mail in payload.event.email gefunden:', emailValue);
+                } else {
+                    console.log('✗ E-Mail nicht in payload.event.email gefunden');
+                }
+                
+                // Versuch 3: Manuelle Suche in der gesamten Payload
+                if (!emailFound) {
+                    console.log('⚠️ Versuche manuelle Suche in der Payload nach E-Mail');
                     
-                    // Nach dem Anzeigen des Formulars nochmals prüfen
-                    console.log('📋 DEBUG - Formular ist jetzt sichtbar');
-                    var emailInputAfter = document.querySelector('input[name="email"]');
-                    if (emailInputAfter) {
-                        console.log('📧 DEBUG - E-Mail-Feld nach Anzeigen des Formulars:', emailInputAfter);
-                        console.log('   - Aktueller Wert:', emailInputAfter.value);
-                        console.log('   - readonly Attribut:', emailInputAfter.getAttribute('readonly'));
+                    // Funktion zum rekursiven Durchsuchen des Objekts nach E-Mail-Eigenschaften
+                    function findEmailInObject(obj, path = '') {
+                        if (!obj || typeof obj !== 'object') return;
+                        
+                        for (var key in obj) {
+                            var currentPath = path ? path + '.' + key : key;
+                            
+                            // Prüfen, ob der Eigenschaftsname "email" enthält
+                            if (key.toLowerCase().includes('email')) {
+                                console.log('✓ Mögliche E-Mail-Eigenschaft gefunden:', currentPath, obj[key]);
+                                
+                                // Prüfen, ob der Wert wie eine E-Mail aussieht
+                                if (typeof obj[key] === 'string' && obj[key].includes('@')) {
+                                    emailValue = obj[key];
+                                    emailFound = true;
+                                    console.log('✓ E-Mail-Wert gefunden in:', currentPath, emailValue);
+                                    return true;
+                                }
+                            }
+                            
+                            // Rekursiv in verschachtelten Objekten suchen
+                            if (typeof obj[key] === 'object' && obj[key] !== null) {
+                                if (findEmailInObject(obj[key], currentPath)) {
+                                    return true;
+                                }
+                            }
+                        }
+                        
+                        return false;
                     }
-                }, 100);
-            } else {
-                console.warn('⚠️ DEBUG - Formular-Element nicht gefunden');
+                    
+                    findEmailInObject(e.data);
+                }
+                
+                // Ausgabe ob E-Mail gefunden wurde
+                if (emailFound) {
+                    console.log('📧 E-Mail erfolgreich extrahiert:', emailValue);
+                } else {
+                    // Wenn keine E-Mail gefunden wurde, verwenden wir eine Test-E-Mail
+                    emailValue = 'test@example.com';
+                    console.log('⚠️ Keine E-Mail gefunden, verwende Test-E-Mail:', emailValue);
+                }
+                
+                // E-Mail in das Formular übertragen
+                console.log('🔄 Versuche E-Mail ins Formular zu übertragen...');
+                
+                // Formular anzeigen
+                var form = document.getElementById('contact-form');
+                var hint = document.getElementById('form-hint');
+                
+                if (form) {
+                    console.log('✓ Formular gefunden, wird angezeigt');
+                    form.style.display = 'block';
+                    
+                    // Warten, bis das Formular sichtbar ist
+                    setTimeout(function() {
+                        form.style.opacity = '1';
+                        console.log('✓ Formular ist jetzt sichtbar');
+                        
+                        // Jetzt können wir das E-Mail-Feld suchen und füllen
+                        setTimeout(function() {
+                            // Versuchen, das E-Mail-Feld zu finden
+                            var emailField = null;
+                            
+                            // Methode 1: Nach name-Attribut suchen
+                            emailField = document.querySelector('input[name="email"]');
+                            if (emailField) {
+                                console.log('✓ E-Mail-Feld gefunden mit input[name="email"]');
+                            } else {
+                                console.log('✗ E-Mail-Feld nicht gefunden mit input[name="email"]');
+                                
+                                // Methode 2: Nach Typ suchen
+                                emailField = document.querySelector('input[type="email"]');
+                                if (emailField) {
+                                    console.log('✓ E-Mail-Feld gefunden mit input[type="email"]');
+                                } else {
+                                    console.log('✗ E-Mail-Feld nicht gefunden mit input[type="email"]');
+                                    
+                                    // Methode 3: Nach Platzhalter suchen
+                                    emailField = document.querySelector('input[placeholder*="E-Mail"]');
+                                    if (emailField) {
+                                        console.log('✓ E-Mail-Feld gefunden mit input[placeholder*="E-Mail"]');
+                                    } else {
+                                        console.log('✗ E-Mail-Feld nicht gefunden mit input[placeholder*="E-Mail"]');
+                                        
+                                        // Alle Inputs auflisten für Debug
+                                        var allInputs = form.querySelectorAll('input');
+                                        console.log('⚠️ Alle Input-Felder im Formular:', allInputs.length);
+                                        allInputs.forEach(function(input, index) {
+                                            console.log('Input #' + index + ':', input.name, input.type, input.placeholder);
+                                        });
+                                    }
+                                }
+                            }
+                            
+                            // Wenn das E-Mail-Feld gefunden wurde
+                            if (emailField) {
+                                // Direktes Setzen des Werts
+                                emailField.value = emailValue;
+                                console.log('✓ E-Mail-Wert gesetzt auf:', emailField.value);
+                                
+                                // E-Mail-Feld als readonly markieren
+                                emailField.setAttribute('readonly', 'readonly');
+                                console.log('✓ E-Mail-Feld auf readonly gesetzt');
+                                
+                                // Visuelles Feedback
+                                emailField.style.backgroundColor = '#f0f9ff';
+                                emailField.style.borderColor = '#93c5fd';
+                                emailField.style.color = '#1e40af';
+                                console.log('✓ E-Mail-Feld-Styling angewendet');
+                                
+                                // Alternative Methoden, falls normale Zuweisung nicht klappt
+                                setTimeout(function() {
+                                    if (!emailField.value) {
+                                        console.log('⚠️ E-Mail-Feld ist immer noch leer, versuche alternative Methoden');
+                                        
+                                        // Methode 1: Ereignis auslösen
+                                        var event = new Event('input', { bubbles: true });
+                                        emailField.value = emailValue;
+                                        emailField.dispatchEvent(event);
+                                        console.log('✓ Input-Event ausgelöst');
+                                        
+                                        // Methode 2: Value direkt im DOM setzen
+                                        if (!emailField.value) {
+                                            console.log('⚠️ E-Mail-Feld immer noch leer, versuche DOM-Manipulation');
+                                            
+                                            // Direkte DOM-Manipulation
+                                            emailField.value = emailValue;
+                                            
+                                            // Sicherstellen, dass readonly gesetzt ist
+                                            emailField.setAttribute('readonly', 'readonly');
+                                            emailField.readOnly = true;
+                                            
+                                            // Nochmals Styling anwenden
+                                            emailField.style.backgroundColor = '#f0f9ff';
+                                            emailField.style.borderColor = '#93c5fd';
+                                            emailField.style.color = '#1e40af';
+                                        }
+                                    }
+                                }, 500);
+                            }
+                        }, 200);
+                    }, 100);
+                } else {
+                    console.log('✗ Formular nicht gefunden');
+                }
+                
+                if (hint) {
+                    hint.style.display = 'none';
+                    console.log('✓ Hinweis ausgeblendet');
+                }
+                
+                // Exit Intent Tracking einrichten
+                setupExitIntent();
+                
+            } catch (error) {
+                console.error('❌ Fehler beim Verarbeiten des Calendly-Events:', error);
+                
+                // Sicherstellen, dass das Formular trotzdem angezeigt wird
+                var form = document.getElementById('contact-form');
+                var hint = document.getElementById('form-hint');
+                
+                if (form) {
+                    form.style.display = 'block';
+                    form.style.opacity = '1';
+                }
+                
+                if (hint) {
+                    hint.style.display = 'none';
+                }
+                
+                // Exit Intent Tracking trotzdem einrichten
+                setupExitIntent();
             }
-            
-            if (hint) {
-                hint.style.display = 'none';
-                console.log('✓ DEBUG - Hinweis ausgeblendet');
-            } else {
-                console.warn('⚠️ DEBUG - Hinweis-Element nicht gefunden');
-            }
-            
-            // Exit Intent Tracking einrichten
-            setupExitIntent();
         }
     });
 })();
