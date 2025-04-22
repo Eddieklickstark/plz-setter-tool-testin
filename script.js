@@ -582,6 +582,9 @@
     }
     
     // Sobald ein Termin bei Calendly gebucht wurde, Formular anzeigen
+    // Verbesserte E-Mail-Übertragungsfunktion
+    // Diese Funktion in Ihrem Code ersetzen oder ergänzen
+    
     window.addEventListener('message', function(e) {
         // Prüfen, ob das Event von Calendly stammt und ein Termin gebucht wurde
         if (e.data.event && e.data.event === 'calendly.event_scheduled') {
@@ -598,15 +601,33 @@
             
             if (email) {
                 console.log('📧 E-Mail aus Calendly erfasst: ' + email);
-                // Suche das E-Mail-Feld im Formular und setze den Wert
-                var emailInput = document.querySelector('input[name="email"]');
-                if (emailInput) {
-                    emailInput.value = email;
-                    // E-Mail als readonly markieren, damit sie nicht versehentlich geändert wird
-                    emailInput.setAttribute('readonly', true);
-                } else {
-                    console.warn('⚠️ E-Mail-Feld nicht gefunden');
-                }
+                
+                // Direkte Methode zur Übertragung der E-Mail
+                var directEmailTransfer = function() {
+                    var emailInput = document.querySelector('input[name="email"]');
+                    if (emailInput) {
+                        console.log('✓ E-Mail-Feld gefunden, setze Wert:', email);
+                        emailInput.value = email;
+                        
+                        // E-Mail-Feld als readonly markieren
+                        emailInput.setAttribute('readonly', 'readonly');
+                        
+                        // Visuelles Feedback durch Styling
+                        emailInput.style.backgroundColor = '#f0f9ff';
+                        emailInput.style.borderColor = '#93c5fd';
+                        emailInput.style.color = '#1e40af';
+                    } else {
+                        console.warn('⚠️ E-Mail-Feld nicht gefunden, versuche erneut in 500ms');
+                        // Erneuter Versuch nach kurzer Verzögerung
+                        setTimeout(directEmailTransfer, 500);
+                    }
+                };
+                
+                // Sofort versuchen, die E-Mail zu übertragen
+                directEmailTransfer();
+                
+                // Sicherheitsversuch nach 1 Sekunde (falls das Formular verzögert geladen wird)
+                setTimeout(directEmailTransfer, 1000);
             }
             
             // Formular sichtbar machen
@@ -618,6 +639,19 @@
                 setTimeout(() => {
                     form.style.opacity = '1';
                 }, 10);
+                
+                // Nach dem Anzeigen des Formulars nochmals versuchen, die E-Mail zu setzen
+                setTimeout(function() {
+                    var emailInput = document.querySelector('input[name="email"]');
+                    if (emailInput && email && !emailInput.value) {
+                        emailInput.value = email;
+                        emailInput.setAttribute('readonly', 'readonly');
+                        emailInput.style.backgroundColor = '#f0f9ff';
+                        emailInput.style.borderColor = '#93c5fd';
+                        emailInput.style.color = '#1e40af';
+                        console.log('🔄 Verzögerter E-Mail-Transfer durchgeführt');
+                    }
+                }, 1500);
             }
             
             if (hint) {
