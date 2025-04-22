@@ -1,8 +1,15 @@
+// So sollte die finale script.js aussehen
+
 (function() {
     var SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR8BRATZeyiaD0NMh00CWU1bJYZA2XRYA3jrd_XRLg-wWV9UEh9hD___JLuiFZT8nalLamjKMJyc3MJ/pub?gid=0&single=true&output=csv';
     var WEBHOOK_URL = 'https://hook.eu2.make.com/zjrt2532r9uvwsudaqhs6p559lagfgww';
     var aeMapping = {};
     var bundeslaender = [];
+
+    // Variablen zur Nachverfolgung des Buchungsstatus
+    var calendlyBooked = false;
+    var formSubmitted = false;
+    var exitIntentShown = false;
 
     // Anzahl maximaler Versuche für POST-Request
     var MAX_RETRIES = 3;
@@ -25,6 +32,7 @@
             /* Input Styles */
             '.ios-input { width: 100%; padding: 12px; border: 1px solid #E5E7EB; border-radius: 10px; font-size: 16px; background: #FAFAFA; }',
             '.ios-input:focus { outline: none; border-color: #046C4E; background: #FFFFFF; box-shadow: 0 0 0 3px rgba(4, 108, 78, 0.1); }',
+            '.ios-input[readonly] { background-color: #f0f9ff; border-color: #93c5fd; }',
 
             /* Calendly Placeholder & Container */
             '.calendly-placeholder { background: #F9FAFB; border: 2px dashed #E5E7EB; border-radius: 12px; padding: 40px; text-align: center; color: #6B7280; min-height: 400px; display: flex; align-items: center; justify-content: center; }',
@@ -56,7 +64,19 @@
             '.overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); display: none; align-items: center; justify-content: center; z-index: 9999; }',
             '.overlay.show { display: flex; }',
             '.spinner { width: 50px; height: 50px; border: 6px solid #f3f3f3; border-top: 6px solid #046C4E; border-radius: 50%; animation: spin 1s linear infinite; }',
-            '@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }'
+            '@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }',
+
+            /* Exit Intent Styling */
+            '.exit-intent-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: center; z-index: 10000; }',
+            '.exit-intent-dialog { max-width: 500px; width: 90%; background-color: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); padding: 30px; position: relative; font-family: figtree, sans-serif; }',
+            '.exit-intent-close { position: absolute; top: 15px; right: 15px; font-size: 24px; line-height: 1; cursor: pointer; color: #6B7280; }',
+            '.exit-intent-title { font-size: 24px; font-weight: 600; color: #111827; margin-bottom: 16px; }',
+            '.exit-intent-message { font-size: 16px; color: #4B5563; margin-bottom: 24px; line-height: 1.6; }',
+            '.exit-intent-buttons { display: flex; gap: 12px; justify-content: flex-end; }',
+            '.exit-intent-button-primary { background-color: #046C4E; color: white; padding: 12px 20px; border-radius: 8px; font-weight: 500; border: none; cursor: pointer; transition: background-color 0.2s; }',
+            '.exit-intent-button-primary:hover { background-color: #065F46; }',
+            '.exit-intent-button-secondary { background-color: #F3F4F6; color: #374151; padding: 12px 20px; border-radius: 8px; font-weight: 500; border: none; cursor: pointer; transition: background-color 0.2s; }',
+            '.exit-intent-button-secondary:hover { background-color: #E5E7EB; }'
         ].join('\n');
         document.head.appendChild(css);
     }
@@ -342,10 +362,136 @@
         }
     }
 
+    // Prüfen, ob Exit Intent Dialog angezeigt werden soll
+    function checkShowExitIntent(isBeforeUnload = false) {
+        // Nur anzeigen wenn:
+        // 1. Calendly gebucht wurde
+        // 2. Formular noch nicht abgesendet wurde
+        // 3. Exit Intent noch nicht angezeigt wurde oder wir sind bei beforeunload
+        if (calendlyBooked && !formSubmitted && (!exitIntentShown || isBeforeUnload)) {
+            if (!isBeforeUnload) {
+                // Nur bei mouseleave den Dialog anzeigen (nicht bei beforeunload)
+                showExitIntentDialog();
+                // Als angezeigt markieren
+                exitIntentShown = true;
+                localStorage.setItem('exitIntentShown', 'true');
+            }
+            return true;
+        }
+        return false;
+    }
+
+    // Exit Intent Dialog anzeigen
+    function showExitIntentDialog() {
+        console.log('⚠️ Exit Intent Dialog wird angezeigt');
+        
+        // Dialog erstellen
+        var dialogHTML = `
+            <div class="exit-intent-overlay" id="exit-intent-overlay">
+                <div class="exit-intent-dialog">
+                    <div class="exit-intent-close" id="exit-intent-close">&times;</div>
+                    <div class="exit-intent-title">Moment noch!</div>
+                    <div class="exit-intent-message">
+                        <p>Sie haben bereits einen Termin gebucht, aber das Formular für weitere Informationen noch nicht abgesendet.</p>
+                        <p>Ihre Zusatzinformationen helfen uns, Ihr Anliegen optimal vorzubereiten.</p>
+                    </div>
+                    <div class="exit-intent-buttons">
+                        <button class="exit-intent-button-secondary" id="exit-intent-leave">Trotzdem verlassen</button>
+                        <button class="exit-intent-button-primary" id="exit-intent-complete">Formular ausfüllen</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Dialog ins DOM einfügen
+        var dialogContainer = document.createElement('div');
+        dialogContainer.innerHTML = dialogHTML;
+        document.body.appendChild(dialogContainer.firstElementChild);
+        
+        // Event-Handler für Dialog-Buttons
+        document.getElementById('exit-intent-close').addEventListener('click', closeExitIntentDialog);
+        document.getElementById('exit-intent-leave').addEventListener('click', function() {
+            // Dem Nutzer erlauben, die Seite zu verlassen ohne weitere Warnung
+            localStorage.removeItem('calendlyBooked');
+            closeExitIntentDialog();
+        });
+        
+        document.getElementById('exit-intent-complete').addEventListener('click', function() {
+            closeExitIntentDialog();
+            // Zum Formular scrollen
+            var form = document.getElementById('contact-form');
+            if (form) {
+                form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    }
+
+    // Exit Intent Dialog schließen
+    function closeExitIntentDialog() {
+        var overlay = document.getElementById('exit-intent-overlay');
+        if (overlay) {
+            overlay.remove();
+        }
+    }
+
+    // Exit Intent Tracking einrichten
+    function setupExitIntent() {
+        console.log('🔍 Exit Intent Tracking aktiviert');
+        
+        // Status wiederherstellen (falls Seite neu geladen wurde)
+        if (localStorage.getItem('calendlyBooked') === 'true') {
+            calendlyBooked = true;
+        }
+        if (localStorage.getItem('formSubmitted') === 'true') {
+            formSubmitted = true;
+        }
+        if (localStorage.getItem('exitIntentShown') === 'true') {
+            exitIntentShown = true;
+        }
+        
+        // Exit Intent Erkennung: Mausbewegung nach oben/außerhalb
+        document.addEventListener('mouseleave', function(e) {
+            if (e.clientY <= 5) { // Wenn Maus den oberen Bereich verlässt
+                checkShowExitIntent();
+            }
+        });
+        
+        // beforeunload Event für Browser-Schließen oder Seite verlassen
+        window.addEventListener('beforeunload', function(e) {
+            if (checkShowExitIntent(true)) {
+                // Standard-Dialog anzeigen
+                e.preventDefault();
+                e.returnValue = '';
+                return '';
+            }
+        });
+    }
+
     function init() {
         addStyles();
         createStructure();
         loadAEData();
+
+        // Beim Laden der Seite Status wiederherstellen
+        if (localStorage.getItem('calendlyBooked') === 'true' && localStorage.getItem('formSubmitted') !== 'true') {
+            // Formular anzeigen
+            var form = document.getElementById('contact-form');
+            var hint = document.getElementById('form-hint');
+            
+            if (form) {
+                form.style.display = 'block';
+                setTimeout(() => {
+                    form.style.opacity = '1';
+                }, 10);
+            }
+            
+            if (hint) {
+                hint.style.display = 'none';
+            }
+            
+            // Exit Intent Tracking aktivieren
+            setupExitIntent();
+        }
 
         var bundeslandSelect = document.getElementById('bundesland-select');
         if (bundeslandSelect) {
@@ -362,6 +508,10 @@
         if (form) {
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
+
+                // Status auf "abgesendet" setzen
+                formSubmitted = true;
+                localStorage.setItem('formSubmitted', 'true');
 
                 // Submit-Button deaktivieren
                 var submitBtn = form.querySelector('.ios-submit');
@@ -436,33 +586,46 @@
         // Prüfen, ob das Event von Calendly stammt und ein Termin gebucht wurde
         if (e.data.event && e.data.event === 'calendly.event_scheduled') {
             console.log('✅ Termin gebucht – Formular wird sichtbar.');
-    
+            
+            // Status auf "gebucht" setzen
+            calendlyBooked = true;
+            // Status im localStorage speichern (für Seitenreloads)
+            localStorage.setItem('calendlyBooked', 'true');
+            
             // Email aus dem Calendly-Payload auslesen
             var calendlyData = e.data.payload;
             var email = calendlyData && calendlyData.invitee && calendlyData.invitee.email;
-    
+            
             if (email) {
+                console.log('📧 E-Mail aus Calendly erfasst: ' + email);
                 // Suche das E-Mail-Feld im Formular und setze den Wert
                 var emailInput = document.querySelector('input[name="email"]');
                 if (emailInput) {
                     emailInput.value = email;
+                    // E-Mail als readonly markieren, damit sie nicht versehentlich geändert wird
+                    emailInput.setAttribute('readonly', true);
+                } else {
+                    console.warn('⚠️ E-Mail-Feld nicht gefunden');
                 }
             }
-    
+            
             // Formular sichtbar machen
             const form = document.getElementById('contact-form');
             const hint = document.getElementById('form-hint');
-    
+            
             if (form) {
                 form.style.display = 'block';
                 setTimeout(() => {
                     form.style.opacity = '1';
                 }, 10);
             }
-    
+            
             if (hint) {
                 hint.style.display = 'none';
             }
+            
+            // Exit Intent Tracking einrichten
+            setupExitIntent();
         }
     });
 })();
